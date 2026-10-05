@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#06130d">
+<meta property="og:title" content="PostPay - Post, Get Views, Earn">
+<meta property="og:description" content="Share photos and videos. 30% of ad revenue is shared with creators.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='26' fill='%2322c55e'/%3E%3Ctext x='50' y='70' font-size='62' font-weight='800' text-anchor='middle' fill='%2303200f' font-family='Arial'%3EP%3C/text%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>PostPay - Post, Get Views, Earn</title>
+<meta name="description" content="Share photos and videos. 30% of ad revenue is shared with creators.">
+<style>
+:root{--bg:#06130d;--card:#0e2118;--card2:#0a1a13;--ink:#ecfdf5;--mute:#8fb3a0;--line:rgba(255,255,255,.08);--acc:#22c55e;--acc2:#10b981;--bad:#ff7b72;--onacc:#03200f;--shadow:0 10px 30px rgba(0,0,0,.35)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+button:focus:not(:focus-visible){outline:none}
+body{margin:0;color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI","Noto Sans Devanagari",sans-serif;background:radial-gradient(900px 520px at 50% -12%,rgba(34,197,94,.22),transparent 62%),linear-gradient(180deg,#06130d,#0a2418 70%,#071a11) fixed}
+.grad{background:linear-gradient(90deg,#bbf7d0,#22c55e);-webkit-background-clip:text;background-clip:text;color:transparent}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(6,19,13,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+header h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.4px;display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;color:var(--onacc);font-weight:800;background:linear-gradient(135deg,#86efac,#22c55e)}
+main{max-width:640px;margin:0 auto;padding:20px 16px 8px}
+button{font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:999px;padding:12px 22px;min-height:46px;transition:transform .12s,opacity .12s}
+button:active{transform:scale(.97)}button:disabled{opacity:.5}
+.pri{color:var(--onacc);background:linear-gradient(135deg,#86efac,#22c55e);box-shadow:0 8px 22px rgba(34,197,94,.28)}
+.ghost{background:rgba(255,255,255,.05);color:var(--ink);border:1px solid var(--line)}
+.big{font-size:18px;padding:15px 30px;min-height:54px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:18px;box-shadow:var(--shadow)}
+textarea,input[type=text],input[type=number]{width:100%;font:inherit;font-size:17px;color:var(--ink);background:var(--card2);padding:14px 16px;border:1px solid var(--line);border-radius:14px;outline:0}
+textarea:focus,input[type=text]:focus,input[type=number]:focus{border-color:var(--acc)}
+textarea{min-height:110px;resize:vertical}
+::placeholder{color:#5f8572}
+input[type=file]{color:var(--mute);font-size:14px;max-width:100%}
+input[type=file]::file-selector-button{margin-right:10px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--ink);padding:10px 16px;border-radius:999px;cursor:pointer;font-weight:600}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.hero{text-align:center;padding:34px 4px 18px}
+.badge{display:inline-block;font-size:13px;font-weight:700;color:#86efac;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);padding:6px 14px;border-radius:999px;margin-bottom:16px}
+.hero h2{margin:0 0 14px;font-size:42px;line-height:1.1;font-weight:800;letter-spacing:-1px}
+.hero p{color:var(--mute);margin:0 auto 24px;max-width:440px;font-size:18px}
+.steps{display:grid;gap:12px;margin-top:30px;text-align:left}
+.step{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+.step .n{flex:none;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--onacc);background:linear-gradient(135deg,#86efac,#22c55e)}
+.step b{display:block;font-size:17px}.step p{margin:2px 0 0;font-size:15px;color:var(--mute);max-width:none}
+.sec{margin:8px 2px 12px;font-size:20px;font-weight:800;letter-spacing:-.3px}
+.profile{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.profile .av{width:56px;height:56px;font-size:22px}
+.pname{flex:1;min-width:0}.pname b{display:block;font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tier{font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px;color:#e9b27a;background:rgba(205,127,50,.16);border:1px solid rgba(205,127,50,.4);white-space:nowrap}
+.tier.t-silver{color:#d6dde3;background:rgba(200,210,220,.12);border-color:rgba(200,210,220,.35)}
+.tier.t-gold{color:#fcd34d;background:rgba(252,211,77,.12);border-color:rgba(252,211,77,.4)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.mini{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+.mini span{display:block;font-size:14px;color:var(--mute)}.mini b{display:block;font-size:26px;margin-top:2px}.green{color:#4ade80}
+.mint{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;padding:18px;border-radius:20px;background:linear-gradient(135deg,#bbf7d0,#86efac);color:#052e16}
+.mint b{font-size:18px;display:block}.mint p{margin:2px 0 0;font-size:14px;opacity:.8}
+.mint button{background:#052e16;color:#bbf7d0;box-shadow:none;flex:none}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.tiles button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px;min-height:84px;background:var(--card);border:1px solid var(--line);color:var(--ink);font-size:14px;border-radius:18px;box-shadow:none}
+.tiles i{font-style:normal;width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;background:rgba(34,197,94,.14);color:#86efac}
+.lb div.r{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:16px;color:var(--ink)}
+.lb div.r:last-child{border-bottom:0}.lb .rk{color:#86efac;font-weight:800;width:28px;display:inline-block}
+.refer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;padding:18px;border-radius:20px;background:linear-gradient(135deg,#6d4aff,#8b5cf6);color:#fff}
+.refer b{font-size:18px;display:block}.refer p{margin:2px 0 0;font-size:14px;opacity:.85}
+.refer button{background:#fff;color:#5b3fd6;box-shadow:none;flex:none}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);margin-bottom:22px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 6px;text-align:center}
+.stats span{display:block;font-size:13px;color:var(--mute)}.stats b{display:block;font-size:24px}
+.stats div+div{border-left:1px solid var(--line)}
+.head{display:flex;align-items:center;gap:12px}
+.av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--onacc);background:linear-gradient(135deg,#86efac,#22c55e);flex:none;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.head b{font-size:17px}
+.meta2{font-size:13px;color:var(--mute)}
+.post p{white-space:pre-wrap;word-break:break-word;margin:14px 0 4px;font-size:18px;line-height:1.6}
+.post img{width:100%;border-radius:16px;margin-top:12px;display:block}
+.meta{font-size:14px;color:var(--mute);display:flex;justify-content:space-between;gap:8px}
+.act{display:flex;gap:10px;margin-top:14px}
+.act button{background:rgba(255,255,255,.06);padding:8px 18px;min-height:40px;color:var(--mute);font-size:14px;font-weight:600}
+.act .del{color:var(--bad)}
+.ad{min-height:96px;border:1.5px dashed rgba(255,255,255,.18);border-radius:18px;margin-bottom:18px;display:flex;align-items:center;justify-content:center;color:#6b8f7c;font-size:12px;letter-spacing:1.4px;text-transform:uppercase}
+.empty{text-align:center;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:34px 20px;box-shadow:var(--shadow)}
+.empty[hidden]{display:none}
+.eico{width:64px;height:64px;margin:0 auto 12px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--onacc);background:linear-gradient(135deg,#86efac,#22c55e)}
+.empty b{font-size:20px;display:block}.empty p{color:var(--mute);margin:6px 0 18px}
+.small{font-size:15px;color:var(--mute)}.small li{margin:6px 0}
+#msg{color:var(--bad);font-size:15px;margin-top:10px;min-height:22px}
+table{width:100%;border-collapse:collapse;font-size:15px;margin-top:12px;color:var(--ink)}
+td,th{border-bottom:1px solid var(--line);padding:10px 6px;text-align:left;word-break:break-all}
+.bigamt{font-size:40px;font-weight:800;margin:8px 0}
+footer{text-align:center;color:#6b8f7c;font-size:14px;padding:26px 24px 120px}
+footer a{color:var(--mute)}
+:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+.view[hidden]{display:none}
+.chips{display:flex;gap:10px;margin:0 0 16px;overflow-x:auto}
+.chips button{padding:9px 18px;min-height:42px;font-size:15px;font-weight:600;background:rgba(255,255,255,.05);color:var(--mute);border:1px solid var(--line);white-space:nowrap}
+.chips button.on{color:var(--onacc);background:linear-gradient(135deg,#86efac,#22c55e);border-color:transparent}
+.person{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:18px;padding:12px 14px;margin-bottom:12px;background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.person span.t{display:flex;flex-direction:column;line-height:1.3}
+#nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:10;display:flex;gap:4px;padding:7px;width:min(92vw,400px);border-radius:999px;background:rgba(14,33,24,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);box-shadow:0 14px 36px rgba(0,0,0,.5)}
+#nav button{flex:1;height:54px;min-height:54px;padding:0;border-radius:999px;background:transparent;color:#6b8f7c;box-shadow:none;display:flex;align-items:center;justify-content:center}
+#nav svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+#nav button.on{background:rgba(34,197,94,.16);color:#4ade80}
+#nav .plus span{width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#86efac,#22c55e);box-shadow:0 8px 18px rgba(34,197,94,.4)}
+#nav .plus svg{stroke:var(--onacc);stroke-width:2.4}
+#nav .plus.on{background:transparent}
+.modal{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:14px}
+.modal[hidden]{display:none}
+.mbox{background:var(--card);border:1px solid var(--line);border-radius:24px;width:100%;max-width:580px;max-height:90vh;display:flex;flex-direction:column;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+.mbox h3{margin:0 0 12px;font-size:22px}
+.mtxt{overflow-y:auto;flex:1;padding-right:6px;margin-bottom:14px}
+.mtxt h4{color:var(--ink);margin:16px 0 4px;font-size:16px}
+.chk{display:flex;gap:12px;align-items:flex-start;font-size:15px;cursor:pointer}
+.chk input{width:24px;height:24px;flex:none;accent-color:var(--acc);margin-top:1px}
+details summary{cursor:pointer;font-weight:600;color:var(--ink)}
+.wv{aspect-ratio:4/5;max-height:72vh;width:100%;border-radius:16px;overflow:hidden;background:#000}
+#v-watch{position:fixed;inset:0;z-index:8;background:#000}
+#v-watch[hidden]{display:none}
+#watchList{height:100vh;height:100dvh;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#watchList::-webkit-scrollbar{display:none}
+.reel{position:relative;height:100vh;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#000}
+.reel .wv{position:absolute;inset:0;aspect-ratio:auto;max-height:none;border-radius:0}
+.edge{position:absolute;top:0;bottom:0;width:18%;z-index:2}.edge.l{left:0}.edge.r{right:0}.edge.t{left:0;right:0;width:auto;height:20%;bottom:auto}
+.ylink{display:inline-flex;align-items:center;padding:8px 18px;min-height:40px;border-radius:999px;background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.25);font-size:14px;font-weight:600;text-decoration:none}
+.rinfo{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:70px 18px 112px;background:linear-gradient(transparent,rgba(0,0,0,.88));color:#fff;pointer-events:none}
+.rinfo .head b{color:#fff}.rinfo .meta2{color:rgba(255,255,255,.75)}
+.rinfo p{margin:10px 0 0;font-size:16px;max-width:78%}
+.rinfo .act{pointer-events:auto}
+.rinfo .act button{background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.25)}
+.rbtns{position:absolute;right:12px;bottom:190px;z-index:4;display:flex;flex-direction:column;gap:12px}
+.rbtns button{width:48px;height:48px;min-height:48px;padding:0;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:1px solid rgba(255,255,255,.28);font-size:18px;box-shadow:none}
+.wback{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:12px;z-index:9;background:rgba(0,0,0,.55);color:#fff;border:1px solid rgba(255,255,255,.28);min-height:42px;padding:8px 18px;box-shadow:none}
+#v-watch .empty{margin:130px 16px 0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:100px;z-index:30;background:var(--card);color:var(--ink);border:1px solid rgba(34,197,94,.4);padding:12px 20px;border-radius:999px;box-shadow:var(--shadow);font-size:15px;font-weight:600}
+.setrow{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:transparent;color:var(--ink);border:0;border-bottom:1px solid var(--line);border-radius:0;padding:14px 4px;min-height:60px;font:inherit;font-weight:600;box-shadow:none;text-decoration:none;cursor:pointer}
+.list{padding:6px 16px}.list .setrow:last-child{border-bottom:0}
+.setrow i{font-style:normal;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(34,197,94,.14);color:#86efac;font-size:18px;flex:none}
+.setrow span{flex:1}.setrow em{font-style:normal;color:var(--mute);font-size:26px}
+#openSet{border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:var(--card2)}
+</style>
+</head>
+<body>
+<noscript><p style="padding:20px;color:#fff">PostPay needs JavaScript. Please enable it in your browser.</p></noscript>
+<header><h1><span class="logo">P</span>Post<span class="grad">Pay</span></h1></header>
+<main>
+  <div class="view" id="v-home">
+    <section class="hero" id="login">
+      <div class="badge">Free &middot; Photos &middot; Videos &middot; Earnings</div>
+      <h2>Post.<br><span class="grad">Get views. Earn.</span></h2>
+      <p>Share your photos or videos. A share of the ad revenue goes straight to creators.</p>
+      <button class="pri big signin">Get started with Google</button>
+    <div><button class="ghost big" id="watchBtn" style="margin-top:12px">&#9654; Watch videos</button></div>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><div><b>Sign in</b><p>Quick login with your Google account.</p></div></div>
+      <div class="step"><span class="n">2</span><div><b>Post photos or videos</b><p>Share your own content with everyone.</p></div></div>
+      <div class="step"><span class="n">3</span><div><b>Earn from views</b><p>30% of ad revenue is shared by views.</p></div></div>
+    </div>
+    </section>
+    <div id="quick" hidden>
+      <div class="profile"><div class="av" id="qav">U</div><div class="pname"><b id="pname">User</b><span class="small">Creator</span></div><span class="tier" id="tier">Bronze Tier</span></div>
+      <h3 class="sec">Your dashboard</h3>
+      <div class="grid2">
+        <div class="mini"><span>Views this month</span><b id="dViews">0</b></div>
+        <div class="mini"><span>Latest earnings</span><b class="green" id="dEarn">Rs 0.00</b></div>
+      </div>
+      <div class="mint"><div><b>Post a video or photo</b><p>Earn from every view on your posts</p></div><button id="mintBtn">Post now</button></div>
+      <h3 class="sec">Explore</h3>
+      <div class="tiles">
+        <button data-go="videos"><i>&#9654;</i>Videos</button>
+        <button data-go="photos"><i>&#9635;</i>Photos</button>
+        <button data-go="people"><i>&#9679;</i>People</button>
+        <button data-go="me"><i>&#8377;</i>Earn</button>
+      </div>
+      <div class="card"><b>Top creators this month</b><div class="lb small" id="lb">Not published yet.</div></div>
+      <div class="refer"><div><b>Invite friends</b><p>Share PostPay with your friends</p></div><button id="inviteBtn">Share</button></div>
+      <div class="stats"><div><span>Rank</span><b id="sRank">-</b></div><div><span>Views</span><b id="sViews">0</b></div><div><span>Posts</span><b id="sPosts">0</b></div></div>
+    </div>
+    <div class="ad">Sponsored &middot; ad space</div>
+    <h3 class="sec">Latest posts</h3>
+    <div id="feed"><p class="small">Loading posts...</p></div>
+    <div id="empty" class="empty" hidden><div class="eico">&#10022;</div><b>No posts yet</b><p>Be the first to share something and start earning.</p><button class="pri" id="emptyBtn">Create first post</button></div>
+  </div>
+
+  <div class="view" id="v-add" hidden>
+    <section class="card" id="needAdd">
+      <b>Sign in to post</b>
+      <p class="small">Sign in with Google to share photos, videos or text.</p>
+      <button class="pri signin">Sign in with Google</button>
+    </section>
+    <section class="card" id="newpost" hidden>
+      <textarea id="txt" maxlength="500" placeholder="Write something (max 500 characters)"></textarea>
+      <input type="text" id="yt" placeholder="YouTube video link (video posts earn)" style="margin-top:10px">
+      <div class="row"><input type="file" id="pic" accept="image/*"><button class="pri" id="send">Post</button></div>
+      <div id="msg" role="status"></div>
+    </section>
+  </div>
+
+  <div class="view" id="v-search" hidden>
+    <input type="text" id="q" placeholder="Search videos, photos or people" autocomplete="off" style="margin-bottom:12px">
+    <div class="chips" id="chips">
+      <button data-c="all" class="on">All</button><button data-c="videos">Videos</button><button data-c="photos">Photos</button><button data-c="people">People</button>
+    </div>
+    <div id="results"></div>
+  </div>
+
+  <div class="view" id="v-me" hidden>
+    <section class="card" id="needMe">
+      <b>Sign in to see your profile</b>
+      <p class="small">Your earnings, UPI ID and payment requests live here.</p>
+      <button class="pri signin">Sign in with Google</button>
+    </section>
+    <section class="card" id="mine" hidden>
+      <b>My earnings</b> <span class="small" id="who"></span>
+      <div id="mineBox" class="small">This month's earnings have not been published yet.</div>
+      <p class="small" id="reqMsg"></p>
+      <button class="setrow" id="openSet" style="margin-top:14px"><i>&#9881;</i><span>Settings</span><em>&rsaquo;</em></button>
+    
+    </section>
+    
+  </div>
+<div class="view" id="v-settings" hidden>
+    <div class="row" style="margin:0 0 16px"><button class="ghost" id="setBack">Back</button><h3 class="sec" style="margin:0">Settings</h3></div>
+    <section class="card" id="payCard">
+      <b>Payment details</b>
+      <label class="small" for="upi">UPI ID (optional, only needed to receive payments)</label>
+      <p class="small" id="upiState">No UPI ID added yet. You can add it anytime.</p>
+      <div class="row"><input type="text" id="upi" placeholder="name@upi" maxlength="60"><button class="pri" id="saveUpi">Save UPI ID</button></div>
+      <p class="small" id="upiMsg"></p>
+    </section>
+    <div class="card list">
+      <button class="setrow" id="rowRules"><i>&#167;</i><span>Rules &amp; earnings</span><em>&rsaquo;</em></button>
+      <button class="setrow" id="rowPriv"><i>&#9919;</i><span>Privacy policy</span><em>&rsaquo;</em></button>
+      <a class="setrow" id="rowContact" href="#"><i>&#9993;</i><span>Contact us</span><em>&rsaquo;</em></a>
+      <button class="setrow" id="rowInvite"><i>&#10150;</i><span>Invite friends</span><em>&rsaquo;</em></button>
+    </div>
+    <section class="card" id="admin" hidden>
+      <b>Admin: monthly earnings</b>
+      <div class="row"><input type="text" id="ym" placeholder="Month (e.g. 202610)" style="max-width:150px"><input type="number" id="earn" placeholder="Total ad revenue (Rs)" style="max-width:190px"></div>
+      <div class="row"><button class="pri" id="calc">Calculate</button><button class="ghost" id="pub" disabled>Publish</button></div>
+      <div id="adminOut" class="small"></div>
+      <div class="row"><button class="ghost" id="loadReq">View payment requests</button></div>
+      <div id="reqList" class="small"></div>
+      <div class="row"><button class="ghost" id="loadRep">Reported posts</button></div>
+      <div id="repList" class="small"></div>
+    </section>
+    <div class="card"><button class="ghost" id="out" style="width:100%">Logout</button></div>
+  </div>
+  <div class="view" id="v-watch" hidden>
+    <button class="wback" id="watchBack">&#8592; Back</button>
+    <div id="watchList"></div>
+    <div id="watchEmpty" class="empty" hidden><div class="eico">&#9654;</div><b>No videos yet</b><p>Videos posted by creators will show up here.</p></div>
+  </div>
+</main>
+
+<nav id="nav" aria-label="Main">
+  <button id="n-home" class="on" aria-label="Home" title="Home"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg></button>
+  <button id="n-watch" aria-label="Watch videos" title="Watch videos"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="4"/><path d="M10 9.4v5.2l4.6-2.6z" fill="currentColor"/></svg></button>
+  <button id="n-add" class="plus" aria-label="Create post" title="Create post"><span><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></button>
+  <button id="n-search" aria-label="Search" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+  <button id="n-me" aria-label="Profile" title="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></button>
+</nav>
+<footer>PostPay &copy; 2026 &middot; <a href="#" id="polLink" style="color:inherit">Rules &amp; Privacy Policy</a></footer>
+
+<div id="policy" class="modal" hidden>
+  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="polT">
+    <h3 id="polT">Rules and Privacy Policy</h3>
+    <div class="mtxt small">
+      <h4>Rules</h4>
+      <ul>
+        <li>You must be <b>18 years or older</b> to use PostPay.</li>
+        <li>Adult, sexual, violent, hateful, illegal or stolen content is not allowed. This includes nudity and anything that sexualises minors.</li>
+        <li>Links in text posts are not allowed (to stop scams). Videos can only be added through the YouTube link box.</li>
+        <li>Photos are checked automatically before posting, and posts with banned words are blocked. Videos must be on YouTube, and age-restricted videos are not allowed.</li>
+        <li>Accounts that break these rules are permanently banned and unpaid earnings can be withheld.</li>
+        <li>Only post photos and videos that are yours or that you have permission to use. You are responsible for everything you post.</li>
+        <li>Tap "Report" on any post that breaks the rules. A post with 3 reports is hidden automatically. The admin can remove posts that break the rules.</li>
+      </ul>
+      <h4>Earnings</h4>
+      <ul>
+        <li><b>30%</b> of each month's ad revenue is shared among creators based on views on photo and video posts. Text-only posts do not earn.</li>
+        <li>One person counts as 1 view per post per day. Views on your own posts are not counted.</li>
+        <li>When your earnings reach <b>Rs 100</b> or more, send a "Payment request". Payment is made by UPI. If you earn less, it carries over to next month.</li>
+        <li>Payments are made only after real ad revenue is received. Earnings are not guaranteed.</li>
+        <li>Your share will be withheld if fake views or stolen content are found.</li>
+      </ul>
+      <h4 id="polPriv">Privacy Policy</h4>
+      <ul>
+        <li>Login is through Google. Our database stores your Google name, your Google profile photo and a unique ID.</li>
+        <li>Your UPI ID is saved only if you enter it, and is visible only to the admin for payments.</li>
+        <li>Your posts (name, text, photo, video) are visible to everyone.</li>
+        <li>Ad networks on this site (such as Adsterra) may use cookies or device information.</li>
+        <li>We do not sell your data.</li>
+        <li>To remove your posts or data, contact: <b id="cEmail"></b></li>
+      </ul>
+    </div>
+    <div id="agreeBar">
+      <label class="chk"><input type="checkbox" id="agreeChk"> I am 18 or older, and I have read the rules and privacy policy above and I agree</label>
+      <div class="row"><button class="pri" id="agreeBtn" disabled>Continue</button><button class="ghost" id="declineBtn">Logout</button></div>
+      <div id="polMsg" class="small" style="color:var(--bad)"></div>
+    </div>
+    <button class="ghost" id="closePol" hidden>Close</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, deleteDoc, updateDoc, setDoc, getDoc, getDocs, doc, arrayUnion, increment, writeBatch, query, where, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ===== STEP 2: apna Firebase config yahan paste karo =====
+const firebaseConfig = {
+  apiKey: "AIzaSyCtm7H3Hsq5jIyH-c-QM1n2Aqo4ulfaHEA",
+  authDomain: "postpay-site.firebaseapp.com",
+  projectId: "postpay-site"
+};
+// ===== STEP 5: apni UID yahan daalo (admin = tum) =====
+const ADMIN_UID = "J3gudf6qcKflkI7KHneeivYhBxr1";
+// Privacy policy me dikhane ke liye contact email (naya alag email banao)
+const CONTACT_EMAIL = "dookai79@gmail.com";
+// =========================================================
+const SHARE = 0.3;   // creators ka hissa (30%), baaki 70% tumhara
+const MIN_PAY = 100; // kam se kam itna hone par request kar sakte hain (Rs)
+const AD_EVERY = 3;  // har 3 post ke baad 1 ad
+
+// Clickjacking se bachav: kisi aur site ke frame me site nahi chalegi
+if (window.top !== window.self) { try { window.top.location = window.self.location; } catch (e) { document.body.innerHTML = ""; } }
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app), db = getFirestore(app);
+const $ = id => document.getElementById(id);
+const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const okPhoto = u => typeof u === "string" && u.length <= 300 && /^https:\/\/[a-z0-9-]+\.googleusercontent\.com\//.test(u);
+const avInner = (name, photo) => okPhoto(photo) ? `<img src="${esc(photo)}" alt="" referrerpolicy="no-referrer">` : esc((name || "U").trim().charAt(0).toUpperCase());
+let me = null, posts = [], payout = null, calcRows = null, agreed = false, banned = false, skipFocus = false, lbRows = [], chip = "all", sel = null, myUpi = "";
+
+const utc = () => { const d = new Date(); const p = n => String(n).padStart(2, "0");
+  return { ym: `${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}`, day: `${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}${p(d.getUTCDate())}` }; };
+
+const POLICY_VER = "v3";
+function openPolicy(need, sec) {
+  $("cEmail").textContent = CONTACT_EMAIL;
+  $("agreeBar").hidden = !need; $("closePol").hidden = need;
+  $("agreeChk").checked = false; $("agreeBtn").disabled = true; $("polMsg").textContent = "";
+  $("policy").hidden = false;
+  if (sec) $(sec).scrollIntoView();
+}
+async function checkConsent(u) {
+  const k = `agree_${POLICY_VER}_${u.uid}`;
+  try { if (localStorage.getItem(k)) agreed = true; } catch (e) {}
+  if (!agreed) { try { const s = await getDoc(doc(db, "consents", u.uid)); if (s.exists() && s.data().ver === POLICY_VER) { agreed = true; try { localStorage.setItem(k, "1"); } catch (e) {} } } catch (e) {} }
+  if (!agreed) openPolicy(true);
+}
+$("agreeChk").onchange = () => { $("agreeBtn").disabled = !$("agreeChk").checked; };
+$("agreeBtn").onclick = async () => {
+  try {
+    await setDoc(doc(db, "consents", me.uid), { ver: POLICY_VER, t: serverTimestamp() });
+    agreed = true; try { localStorage.setItem(`agree_${POLICY_VER}_${me.uid}`, "1"); } catch (e) {}
+    $("policy").hidden = true; render();
+  } catch (e) { $("polMsg").textContent = "Could not save. Please try again."; }
+};
+$("declineBtn").onclick = () => { $("policy").hidden = true; signOut(auth); };
+$("closePol").onclick = () => { $("policy").hidden = true; };
+$("polLink").onclick = e => { e.preventDefault(); openPolicy(!!me && !agreed); };
+document.querySelectorAll(".signin").forEach(b => b.onclick = () => signInWithPopup(auth, new GoogleAuthProvider()).catch(e => alert("Login failed: " + e.code)));
+$("out").onclick = () => signOut(auth).then(() => show("home"));
+function show(t) {
+  ["home", "add", "search", "me", "settings", "watch"].forEach(k => { $("v-" + k).hidden = k !== t; const nb = $("n-" + k); if (nb) nb.classList.toggle("on", k === t); });
+  if (t === "settings") $("n-me").classList.add("on");
+  document.body.style.overflow = t === "watch" ? "hidden" : "";
+  window.scrollTo(0, 0);
+  if (t === "search" && !skipFocus) $("q").focus();
+  skipFocus = false;
+  if (t === "home") loadDash();
+}
+["home", "watch", "add", "search", "me"].forEach(k => $("n-" + k).onclick = () => show(k));
+$("q").oninput = () => { sel = null; render(); };
+document.querySelectorAll("#chips button").forEach(b => b.onclick = () => {
+  chip = b.dataset.c; sel = null;
+  document.querySelectorAll("#chips button").forEach(x => x.classList.toggle("on", x === b));
+  render();
+});
+onAuthStateChanged(auth, async u => {
+  me = u; agreed = false; setUpi("");
+  $("newpost").hidden = $("mine").hidden = !u;
+  $("needAdd").hidden = $("needMe").hidden = !!u;
+  $("who").textContent = u ? "(" + (u.displayName || "") + ")" : "";
+  $("quick").hidden = !u; $("qav").innerHTML = avInner(u ? (u.displayName || "U") : "U", u ? u.photoURL : ""); $("pname").textContent = u ? (u.displayName || "User") : "User";
+  $("login").hidden = !!u;
+  $("admin").hidden = !(u && u.uid === ADMIN_UID);
+  if (u) {
+    try { banned = (await getDoc(doc(db, "banned", u.uid))).exists(); } catch (e) {}
+    await checkConsent(u);
+    loadDash();
+    $("ym").value = utc().ym;
+    try { const s = await getDoc(doc(db, "users", u.uid)); if (s.exists()) setUpi(s.data().upi || ""); } catch (e) {}
+    showMine();
+  }
+  render();
+});
+
+getDoc(doc(db, "settings", "latest")).then(s => { if (s.exists()) { payout = s.data(); showMine(); } }).catch(() => {});
+
+async function showMine() {
+  if (!me) return;
+  let h = `<p class="small">My UID (for admin setup): <b style="user-select:all">${esc(me.uid)}</b></p>`, r = null, rq = null;
+  if (payout) {
+    const id = `${me.uid}_${payout.ym}`;
+    try { const s = await getDoc(doc(db, "payouts", id)); if (s.exists()) r = s.data(); } catch (e) {}
+    try { const s = await getDoc(doc(db, "requests", id)); if (s.exists()) rq = s.data(); } catch (e) {}
+    h = `<p class="small">Month ${esc(payout.ym)}</p>` + (r
+      ? `<div class="bigamt grad">Rs ${r.amount.toFixed(2)}</div><p class="small">My views: ${r.views}</p>` +
+        (rq ? `<p class="small"><b>${rq.status === "paid" ? "Payment has been sent." : "Request sent. Payment will follow soon."}</b></p>`
+            : r.amount >= MIN_PAY ? `<button class="pri" id="reqBtn">Send payment request</button>`
+            : `<p class="small">You can request payment at Rs ${MIN_PAY}. If you earn less, it carries over to next month.</p>`)
+      : `<p class="small">You had no views this month.</p>`) + h;
+  }
+  $("mineBox").innerHTML = h;
+  $("dEarn").textContent = r ? "Rs " + Number(r.amount).toFixed(2) : "Rs 0.00";
+  if ($("reqBtn")) $("reqBtn").onclick = async () => {
+    if (!agreed) { openPolicy(true); return; }
+    const upi = myUpi;
+    if (!upi) { $("reqMsg").textContent = "Please add your UPI ID in Settings first, then send the request."; return; }
+    try {
+      await setDoc(doc(db, "requests", `${me.uid}_${payout.ym}`), { uid: me.uid, name: (me.displayName || "User").slice(0, 60), ym: payout.ym, amount: r.amount, upi, status: "pending", createdAt: serverTimestamp() });
+      showMine();
+    } catch (e) { $("reqMsg").textContent = "Request failed. Save your UPI ID in Settings and try again."; }
+  };
+}
+
+function setUpi(v) {
+  myUpi = v; $("upi").value = "";
+  $("upiState").textContent = v ? "Your UPI ID: " + v : "No UPI ID added yet. You can add it anytime.";
+  $("saveUpi").textContent = v ? "Update UPI ID" : "Save UPI ID";
+}
+$("saveUpi").onclick = async () => {
+  if (!agreed) { openPolicy(true); return; }
+  const v = $("upi").value.trim();
+  if (!/^[A-Za-z0-9._-]{2,}@[A-Za-z]{2,}$/.test(v)) { $("upiMsg").textContent = "Enter a valid UPI ID like name@upi."; return; }
+  try { await setDoc(doc(db, "users", me.uid), { upi: v, name: (me.displayName || "User").slice(0, 60) }); setUpi(v); $("upiMsg").textContent = "UPI ID saved."; }
+  catch (e) { $("upiMsg").textContent = "Could not save. Please try again."; }
+};
+
+function compress(file) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const s = Math.min(1, 800 / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      let q = 0.7, out = c.toDataURL("image/jpeg", q);
+      while (out.length > 300000 && q > 0.2) { q -= 0.1; out = c.toDataURL("image/jpeg", q); }
+      out.length > 390000 ? rej(new Error("big")) : res(out);
+    };
+    img.onerror = () => rej(new Error("bad"));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+const ytId = u => { const m = String(u).trim().match(/(?:youtu\.be\/|v=|shorts\/|embed\/|live\/)([A-Za-z0-9_-]{11})/); return m ? m[1] : ""; };
+// ===== Safety: banned words, YouTube check, photo scan =====
+const BAD = /(^|[^a-z0-9])(anal|behenchod|bhenchod|bhosda|bhosdi|bhosdika|bitch|blowjob|boob|boobs|bsdk|camgirl|chod|chodna|choot|chudai|chut|chutiya|cock|cum|dick|escort|faggot|fuck|fucker|fucking|gaand|gand|gandu|handjob|hentai|incest|lauda|loda|loli|lund|madarchod|masturbate|masturbation|mms|motherfucker|naked|nigga|nigger|nipple|nipples|nsfw|nude|nudes|onlyfans|orgasm|pedo|pedophile|porn|pornhub|porno|pussy|raand|randi|rape|rapist|sex|sexy|slut|whore|xnxx|xvideos|xxx)([^a-z0-9]|$)/i;
+function toast(t) { const d = document.createElement("div"); d.className = "toast"; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2600); }
+async function ytCheck(id) {
+  try {
+    const r = await fetch("https://www.youtube.com/oembed?url=" + encodeURIComponent("https://www.youtube.com/watch?v=" + id) + "&format=json");
+    if (r.status === 401 || r.status === 403 || r.status === 404) return { ok: false, why: "This video is private, age-restricted or unavailable, so it cannot be added." };
+    if (r.ok) { const j = await r.json(); if (BAD.test((j.title || "") + " " + (j.author_name || ""))) return { ok: false, why: "This video has words in its title that are not allowed." }; }
+  } catch (e) {}
+  return { ok: true };
+}
+function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
+let nsfwModel = null;
+async function getNsfw() {
+  if (nsfwModel) return nsfwModel;
+  if (!window.tf) await loadScript("https://unpkg.com/@tensorflow/tfjs");
+  if (!window.nsfwjs) await loadScript("https://unpkg.com/nsfwjs");
+  nsfwModel = await window.nsfwjs.load();
+  return nsfwModel;
+}
+async function scanPhoto(dataUrl) {
+  try {
+    const model = await getNsfw();
+    const img = new Image(); img.src = dataUrl; await img.decode();
+    const p = {}; (await model.classify(img)).forEach(x => { p[x.className] = x.probability; });
+    if ((p.Porn || 0) + (p.Hentai || 0) >= 0.3 || (p.Sexy || 0) >= 0.75) return { ok: false, why: "This photo looks inappropriate and cannot be posted." };
+    return { ok: true };
+  } catch (e) { return { ok: false, why: "Photo safety check could not load. Check your internet and try again." }; }
+}
+$("send").onclick = async () => {
+  const text = $("txt").value.trim(), f = $("pic").files[0], m = $("msg"), link = $("yt").value.trim(), vid = link ? ytId(link) : "";
+  m.textContent = "";
+  if (!me) return;
+  if (!agreed) { openPolicy(true); return; }
+  if (banned) { m.textContent = "Your account has been restricted from posting."; return; }
+  if (link && !vid) { m.textContent = "That YouTube link is not valid."; return; }
+  if (!text && !f && !vid) { m.textContent = "Write something, choose a photo or add a video link."; return; }
+  if (BAD.test(text)) { m.textContent = "Your post has words that are not allowed on PostPay."; return; }
+  if (/(https?:|www\.|bit\.ly|t\.me\/|wa\.me\/)/i.test(text)) { m.textContent = "Links are not allowed in text. Add videos only through the YouTube link box."; return; }
+  $("send").disabled = true;
+  try {
+    if (vid) { m.textContent = "Checking video..."; const c = await ytCheck(vid); if (!c.ok) { m.textContent = c.why; $("send").disabled = false; return; } }
+    let img = "";
+    if (f) {
+      m.textContent = "Checking photo...";
+      img = await compress(f);
+      const s = await scanPhoto(img);
+      if (!s.ok) { m.textContent = s.why; $("send").disabled = false; return; }
+    }
+    m.textContent = "";
+    const bt = writeBatch(db), ref = doc(collection(db, "posts"));
+    bt.set(doc(db, "rate", me.uid), { t: serverTimestamp() });
+    bt.set(ref, { uid: me.uid, name: (me.displayName || "User").slice(0, 60), photo: okPhoto(me.photoURL) ? me.photoURL : "", text, img, vid, createdAt: serverTimestamp(), reporters: [] });
+    await bt.commit();
+    $("txt").value = ""; $("pic").value = ""; $("yt").value = ""; toast("Posted"); show("home");
+  } catch (e) { m.textContent = "Could not post. Please wait a minute between posts and try again."; }
+  $("send").disabled = false;
+};
+
+onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(30)), s => {
+  posts = s.docs.map(d => ({ id: d.id, ...d.data() }));
+  render();
+}, () => { $("feed").innerHTML = '<p class="small">Could not load posts. Please check the Firebase config.</p>'; });
+
+// View ginti: doosre ke post par, din me 1 baar, tab jab post screen par dikhe
+let watchKey = null;
+const wio = new IntersectionObserver(es => es.forEach(e => {
+  const id = e.target.dataset.vid;
+  e.target.innerHTML = e.isIntersecting ? `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&playsinline=1&rel=0&modestbranding=1" title="Video" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;height:100%;border:0"></iframe>` : "";
+}), { threshold: 0.6 });
+const counted = new Set();
+async function countView(p) {
+  if (!me || !agreed || me.uid === p.uid || !(p.vid || p.img)) return;
+  const { ym, day } = utc(), vid = `${p.id}_${me.uid}_${day}`;
+  if (counted.has(vid) || localStorage.getItem("v_" + vid)) return;
+  counted.add(vid);
+  try {
+    const b = writeBatch(db);
+    b.set(doc(db, "views", vid), { uid: me.uid, postId: p.id, t: serverTimestamp() });
+    b.update(doc(db, "posts", p.id), { ["v" + ym]: increment(1) });
+    await b.commit();
+  } catch (e) {}
+  try { localStorage.setItem("v_" + vid, "1"); } catch (e) {}
+}
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { io.unobserve(e.target); const p = posts.find(x => x.id === e.target.dataset.pid); if (p) countView(p); }
+}), { threshold: 0.6 });
+
+function render() {
+  const vis = posts.filter(p => (p.reporters || []).length < 3);
+  $("empty").hidden = vis.length > 0;
+  const card = (p, i, ad) => {
+    const t = p.createdAt ? p.createdAt.toDate().toLocaleDateString("en-IN") : "just now";
+    const mine = me && me.uid === p.uid, did = me && (p.reporters || []).includes(me.uid);
+    const img = typeof p.img === "string" && p.img.startsWith("data:image/jpeg;base64,") ? p.img : "";
+    return `<article class="card post" data-pid="${p.id}">
+      <div class="head"><div class="av">${avInner(p.name, p.photo)}</div><div><b>${esc(p.name)}</b><div class="meta2">${t}</div></div></div>
+      ${p.text ? `<p>${esc(p.text)}</p>` : ""}
+      ${img ? `<img src="${img}" alt="Post photo" loading="lazy">` : ""}
+      ${/^[A-Za-z0-9_-]{11}$/.test(p.vid || "") ? `<iframe src="https://www.youtube-nocookie.com/embed/${p.vid}?rel=0&playsinline=1" title="Video" loading="lazy" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;margin-top:8px"></iframe>` : (img ? "" : `<div class="meta" style="margin-top:6px"><span>Text-only post (does not earn)</span></div>`)}
+      <div class="act">
+        ${/^[A-Za-z0-9_-]{11}$/.test(p.vid || "") ? `<button data-reel="${p.id}">&#9654; Full screen</button>` : ""}
+        ${mine || (me && me.uid === ADMIN_UID) ? `<button class="del" data-del="${p.id}">Delete</button>` : ""}
+        ${me && !mine && !did ? `<button data-rep="${p.id}">Report</button>` : ""}
+        ${did ? `<span class="meta">Reported</span>` : ""}
+      </div></article>` + (ad && (i + 1) % AD_EVERY === 0 ? `<div class="ad">Sponsored &middot; ad space</div>` : "");
+  };
+  $("feed").innerHTML = vis.map((p, i) => card(p, i, true)).join("");
+  const vids = vis.filter(p => /^[A-Za-z0-9_-]{11}$/.test(p.vid || ""));
+  const wk = vids.map(p => p.id + ":" + (p.reporters || []).length).join("|") + (me ? me.uid : "");
+  if (wk !== watchKey) {
+    watchKey = wk;
+    $("watchEmpty").hidden = vids.length > 0;
+    $("watchList").innerHTML = vids.map(p => {
+      const mine = me && me.uid === p.uid, did = me && (p.reporters || []).includes(me.uid);
+      return `<article class="reel" data-pid="${p.id}"><div class="wv" data-vid="${p.vid}" style="background:#000 url(https://i.ytimg.com/vi/${p.vid}/hqdefault.jpg) center/cover no-repeat"></div><div class="edge l"></div><div class="edge r"></div><div class="edge t"></div>
+        <div class="rbtns"><button data-wprev aria-label="Previous video">&#9650;</button><button data-wnext aria-label="Next video">&#9660;</button></div>
+        <div class="rinfo"><div class="head"><div class="av">${avInner(p.name, p.photo)}</div><b>${esc(p.name)}</b></div>
+          ${p.text ? `<p>${esc(p.text)}</p>` : ""}
+          <div class="act">
+            <a class="ylink" href="https://youtu.be/${p.vid}" target="_blank" rel="noopener noreferrer">Open on YouTube</a>
+            ${mine || (me && me.uid === ADMIN_UID) ? `<button class="del" data-del="${p.id}">Delete</button>` : ""}
+            ${me && !mine && !did ? `<button data-rep="${p.id}">Report</button>` : ""}
+            ${did ? `<span class="meta">Reported</span>` : ""}
+          </div></div></article>`;
+    }).join("");
+    document.querySelectorAll(".wv").forEach(x => wio.observe(x));
+  }
+  const ql = ($("q").value || "").trim().toLowerCase();
+  let type = chip === "videos" ? "video" : chip === "photos" ? "photo" : "";
+  const terms = [];
+  ql.split(/\s+/).filter(Boolean).forEach(w => {
+    if (/^(videos?|reels?|clips?)$/.test(w)) type = "video";
+    else if (/^(photos?|images?|pics?|pictures?)$/.test(w)) type = "photo";
+    else terms.push(w);
+  });
+  const hasTerm = terms.length > 0;
+  const typeOk = p => !type || (type === "video" ? !!p.vid : !!p.img);
+  const termOk = p => terms.every(w => ((p.name || "") + " " + (p.text || "")).toLowerCase().includes(w));
+  const authors = () => { const m = {}; vis.forEach(p => { if (!hasTerm || terms.every(w => (p.name || "").toLowerCase().includes(w))) { m[p.uid] = m[p.uid] || { uid: p.uid, name: p.name, photo: p.photo, n: 0 }; m[p.uid].n++; } }); return Object.values(m); };
+  let out = "";
+  if (sel) {
+    const nm = (vis.find(p => p.uid === sel) || {}).name || "Profile";
+    const list = vis.filter(p => p.uid === sel && typeOk(p));
+    out = `<div class="row" style="margin:0 0 12px"><button class="ghost" id="selBack">Back</button><b>${esc(nm)}</b></div>` + (list.length ? list.map((p, i) => card(p, i, false)).join("") : '<p class="small">No posts.</p>');
+  } else if (type || hasTerm || chip !== "all") {
+    let people = [];
+    if (chip === "people") people = authors().slice(0, 20);
+    else if (chip === "all" && hasTerm && !type) people = authors().slice(0, 5);
+    const list = chip === "people" ? [] : vis.filter(p => typeOk(p) && (!hasTerm || termOk(p)));
+    out = people.map(u => `<button class="person" data-uid="${esc(u.uid)}"><span class="av">${avInner(u.name, u.photo)}</span><span class="t"><b>${esc(u.name)}</b><span class="meta2">${u.n} post${u.n > 1 ? "s" : ""}</span></span></button>`).join("") + list.map((p, i) => card(p, i, false)).join("");
+    if (!out) out = '<p class="small">No results found.</p>';
+  } else out = '<p class="small">Search for videos, photos or people.</p>';
+  $("results").innerHTML = out;
+  document.querySelectorAll("[data-uid]").forEach(b => b.onclick = () => { sel = b.dataset.uid; render(); window.scrollTo(0, 0); });
+  if ($("selBack")) $("selBack").onclick = () => { sel = null; render(); };
+  document.querySelectorAll("[data-reel]").forEach(b => b.onclick = () => openReel(b.dataset.reel));
+  document.querySelectorAll("[data-del]").forEach(b => b.onclick = () => confirm("Delete this post?") && deleteDoc(doc(db, "posts", b.dataset.del)));
+  document.querySelectorAll("[data-rep]").forEach(b => b.onclick = () => confirm("Report this post as breaking the rules?") && updateDoc(doc(db, "posts", b.dataset.rep), { reporters: arrayUnion(me.uid) }));
+  document.querySelectorAll("article[data-pid]").forEach(a => { const p = posts.find(x => x.id === a.dataset.pid); if (p && (p.vid || p.img)) io.observe(a); });
+}
+
+// ===== Admin: mahine ka hisaab =====
+$("calc").onclick = async () => {
+  const ym = $("ym").value.trim(), earn = parseFloat($("earn").value);
+  if (!/^\d{6}$/.test(ym) || !(earn >= 0)) { $("adminOut").textContent = "Enter the month (e.g. 202610) and total revenue."; return; }
+  $("adminOut").textContent = "Calculating...";
+  const s = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(200)));
+  const by = {};
+  s.forEach(d => { const x = d.data(), v = (x.vid || x.img) ? (x["v" + ym] || 0) : 0; if (v) { by[x.uid] = by[x.uid] || { uid: x.uid, name: x.name, views: 0 }; by[x.uid].views += v; } });
+  const rows = Object.values(by), total = rows.reduce((a, r) => a + r.views, 0), pool = earn * SHARE;
+  const us = await getDocs(collection(db, "users")), upi = {};
+  us.forEach(d => upi[d.id] = d.data().upi || "");
+  rows.forEach(r => { r.amount = total ? pool * r.views / total : 0; r.upi = upi[r.uid] || ""; });
+  rows.sort((a, b) => b.amount - a.amount);
+  calcRows = { ym, earn, pool, total, rows };
+  $("adminOut").innerHTML = `<p>Total views: ${total} | Creators pool: Rs ${pool.toFixed(2)}</p><table><tr><th>Name</th><th>Views</th><th>Rs</th><th>UPI</th></tr>` +
+    rows.map(r => `<tr><td>${esc(r.name)}</td><td>${r.views}</td><td>${r.amount.toFixed(2)}${r.amount >= MIN_PAY ? " (can request)" : ""}</td><td>${esc(r.upi)}</td></tr>`).join("") + `</table>`;
+  $("pub").disabled = false;
+};
+$("pub").onclick = async () => {
+  if (!calcRows) return;
+  const bt = writeBatch(db);
+  calcRows.rows.forEach(r => bt.set(doc(db, "payouts", `${r.uid}_${calcRows.ym}`), { uid: r.uid, name: r.name, ym: calcRows.ym, views: r.views, amount: r.amount }));
+  bt.set(doc(db, "settings", "latest"), { ym: calcRows.ym, earn: calcRows.earn });
+  bt.set(doc(db, "settings", "leaderboard"), { ym: calcRows.ym, rows: calcRows.rows.slice(0, 10).map(r => ({ uid: r.uid, name: r.name, views: r.views })) });
+  await bt.commit();
+  payout = { ym: calcRows.ym, earn: calcRows.earn }; showMine();
+  $("adminOut").insertAdjacentHTML("afterbegin", "<p><b>Published.</b></p>");
+};
+
+// Admin: aayi hui payment requests
+$("loadReq").onclick = async () => {
+  const s = await getDocs(query(collection(db, "requests"), where("status", "==", "pending")));
+  const rs = s.docs.map(d => ({ id: d.id, ...d.data() }));
+  $("reqList").innerHTML = rs.length ? `<table><tr><th>Name</th><th>Month</th><th>Rs</th><th>UPI</th><th></th></tr>` +
+    rs.map(r => `<tr><td>${esc(r.name)}</td><td>${esc(r.ym)}</td><td>${Number(r.amount).toFixed(2)}</td><td>${esc(r.upi)}</td><td><button class="ghost" data-paid="${r.id}">Mark paid</button></td></tr>`).join("") + `</table>` : "<p>No pending requests.</p>";
+  document.querySelectorAll("[data-paid]").forEach(b => b.onclick = async () => { await updateDoc(doc(db, "requests", b.dataset.paid), { status: "paid" }); $("loadReq").click(); });
+};
+$("emptyBtn").onclick = () => { if (me) show("add"); else document.querySelector("#login .signin").click(); };
+
+// ===== Dashboard =====
+async function loadLb() {
+  try {
+    const s = await getDoc(doc(db, "settings", "leaderboard"));
+    if (s.exists()) { lbRows = s.data().rows || []; $("lb").innerHTML = lbRows.length ? lbRows.slice(0, 5).map((r, i) => `<div class="r"><span><span class="rk">${i + 1}</span>${esc(r.name)}</span><span>${r.views} views</span></div>`).join("") : "Not published yet."; }
+  } catch (e) {}
+}
+async function loadDash() {
+  if (!me) return;
+  const { ym } = utc();
+  try {
+    const s = await getDocs(query(collection(db, "posts"), where("uid", "==", me.uid)));
+    let views = 0, n = 0;
+    s.forEach(d => { const x = d.data(); n++; if (x.vid || x.img) views += x["v" + ym] || 0; });
+    $("dViews").textContent = $("sViews").textContent = views;
+    $("sPosts").textContent = n;
+    const t = views >= 1000 ? ["Gold Tier", "t-gold"] : views >= 100 ? ["Silver Tier", "t-silver"] : ["Bronze Tier", ""];
+    $("tier").textContent = t[0]; $("tier").className = "tier " + t[1];
+  } catch (e) {}
+  const k = lbRows.findIndex(r => r.uid === me.uid);
+  $("sRank").textContent = k >= 0 ? "#" + (k + 1) : "-";
+}
+loadLb();
+$("mintBtn").onclick = () => show("add");
+document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => {
+  const c = b.dataset.go;
+  if (c === "me") { show("me"); return; }
+  if (c === "videos") { show("watch"); return; }
+  chip = c; sel = null; skipFocus = true;
+  document.querySelectorAll("#chips button").forEach(x => x.classList.toggle("on", x.dataset.c === c));
+  show("search"); render();
+});
+$("inviteBtn").onclick = async () => {
+  const url = location.href.split("#")[0];
+  try {
+    if (navigator.share) await navigator.share({ title: "PostPay", text: "Post photos and videos and earn from views on PostPay.", url });
+    else { await navigator.clipboard.writeText(url); alert("Link copied"); }
+  } catch (e) {}
+};
+
+// ===== Settings =====
+$("openSet").onclick = () => show("settings");
+$("setBack").onclick = () => show("me");
+$("rowRules").onclick = () => openPolicy(false);
+$("rowPriv").onclick = () => openPolicy(false, "polPriv");
+$("rowContact").href = "mailto:" + CONTACT_EMAIL;
+$("rowInvite").onclick = () => $("inviteBtn").click();
+
+// ===== Admin: reported posts =====
+$("loadRep").onclick = () => {
+  const rs = posts.filter(p => (p.reporters || []).length >= 1);
+  $("repList").innerHTML = rs.length ? rs.map(p => `<div class="card" style="margin:12px 0 0;padding:14px"><div class="meta"><b>${esc(p.name)}</b><span>${(p.reporters || []).length} reports</span></div><p class="small" style="margin:8px 0">${esc((p.text || "").slice(0, 120))}${p.img ? " [photo]" : ""}${p.vid ? " [video]" : ""}</p><div class="row" style="margin-top:6px"><button class="ghost" data-rdel="${p.id}">Delete</button><button class="ghost" data-rban="${p.uid}" data-rid="${p.id}">Delete + Ban</button><button class="ghost" data-rok="${p.id}">Keep</button></div></div>`).join("") : "<p>No reported posts.</p>";
+  document.querySelectorAll("[data-rdel]").forEach(b => b.onclick = async () => { await deleteDoc(doc(db, "posts", b.dataset.rdel)); $("loadRep").click(); });
+  document.querySelectorAll("[data-rban]").forEach(b => b.onclick = async () => { if (!confirm("Delete this post and ban the user?")) return; await setDoc(doc(db, "banned", b.dataset.rban), { t: serverTimestamp() }); await deleteDoc(doc(db, "posts", b.dataset.rid)); toast("User banned"); $("loadRep").click(); });
+  document.querySelectorAll("[data-rok]").forEach(b => b.onclick = async () => { await updateDoc(doc(db, "posts", b.dataset.rok), { reporters: [] }); $("loadRep").click(); });
+};
+
+// ===== Watch =====
+$("watchBack").onclick = () => show("home");
+$("watchBtn").onclick = () => show("watch");
+$("watchList").onclick = e => {
+  const b = e.target.closest("[data-wnext],[data-wprev]");
+  if (!b) return;
+  const L = $("watchList");
+  L.scrollBy({ top: (b.hasAttribute("data-wnext") ? 1 : -1) * L.clientHeight, behavior: "smooth" });
+};
+function openReel(pid) {
+  show("watch");
+  setTimeout(() => {
+    const el = document.querySelector('#watchList .reel[data-pid="' + pid + '"]');
+    if (el) $("watchList").scrollTo({ top: el.offsetTop, behavior: "instant" });
+  }, 80);
+}
+</script>
+</body>
+</html>
