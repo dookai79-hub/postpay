@@ -190,6 +190,9 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
     <section class="card" id="newpost" hidden>
       <textarea id="txt" maxlength="500" placeholder="Write something (max 500 characters)"></textarea>
       <input type="text" id="yt" placeholder="YouTube video link (video posts earn)" style="margin-top:10px">
+      <label class="small" for="vfile" style="display:block;margin-top:14px">Or upload a video from your phone (max 60 sec, 25 MB)</label>
+      <input type="file" id="vfile" accept="video/mp4,video/webm,video/quicktime">
+      <div id="vprog" class="small"></div>
       <div class="row"><input type="file" id="pic" accept="image/*"><button class="pri" id="send">Post</button></div>
       <div id="msg" role="status"></div>
     </section>
@@ -286,6 +289,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
       <h4 id="polPriv">Privacy Policy</h4>
       <ul>
         <li>Login is through Google. Our database stores your Google name, your Google profile photo and a unique ID.</li>
+        <li>Videos you upload are stored with our video partner, Cloudinary.</li>
         <li>Your UPI ID is saved only if you enter it, and is visible only to the admin for payments.</li>
         <li>Your posts (name, text, photo, video) are visible to everyone.</li>
         <li>Ad networks on this site (such as Adsterra) may use cookies or device information.</li>
@@ -314,6 +318,14 @@ const firebaseConfig = {
   projectId: "postpay-site"
 };
 // ===== STEP 5: apni UID yahan daalo (admin = tum) =====
+// ===== Direct video upload (Cloudinary free plan) =====
+const CLOUD_NAME = "dk2kgkftv";
+const UPLOAD_PRESET = "postpay_unsigned";
+const MAX_MB = 25, MAX_SEC = 60;
+const CLOUD_READY = !CLOUD_NAME.startsWith("YAHAN") && !UPLOAD_PRESET.startsWith("YAHAN");
+const cvOk = s => /^[A-Za-z0-9_\/-]{1,100}$/.test(s || "");
+const cvUrl = id => `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/f_mp4,vc_h264,q_auto:low,w_540/${id}.mp4`;
+const cvPoster = id => `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/so_1,f_jpg,w_540/${id}.jpg`;
 const ADMIN_UID = "J3gudf6qcKflkI7KHneeivYhBxr1";
 // Privacy policy me dikhane ke liye contact email (naya alag email banao)
 const CONTACT_EMAIL = "dookai79@gmail.com";
@@ -335,7 +347,7 @@ let me = null, posts = [], payout = null, calcRows = null, agreed = false, banne
 const utc = () => { const d = new Date(); const p = n => String(n).padStart(2, "0");
   return { ym: `${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}`, day: `${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}${p(d.getUTCDate())}` }; };
 
-const POLICY_VER = "v3";
+const POLICY_VER = "v4";
 function openPolicy(need, sec) {
   $("cEmail").textContent = CONTACT_EMAIL;
   $("agreeBar").hidden = !need; $("closePol").hidden = need;
@@ -486,33 +498,81 @@ async function scanPhoto(dataUrl) {
     return { ok: true };
   } catch (e) { return { ok: false, why: "Photo safety check could not load. Check your internet and try again." }; }
 }
+function grabFrame(v, t) {
+  return new Promise((res, rej) => {
+    v.onseeked = () => {
+      const c = document.createElement("canvas"), s = Math.min(1, 320 / (v.videoWidth || 320));
+      c.width = Math.round((v.videoWidth || 320) * s); c.height = Math.round((v.videoHeight || 240) * s);
+      c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+      res(c.toDataURL("image/jpeg", 0.8));
+    };
+    v.onerror = () => rej(new Error("bad"));
+    v.currentTime = t;
+  });
+}
+async function checkVideo(file) {
+  if (file.size > MAX_MB * 1024 * 1024) return { ok: false, why: "This video is too large. Maximum is " + MAX_MB + " MB." };
+  if (!/^video\/(mp4|webm|quicktime)$/.test(file.type)) return { ok: false, why: "Only MP4, WebM or MOV videos are allowed." };
+  const url = URL.createObjectURL(file), v = document.createElement("video");
+  v.muted = true; v.preload = "auto"; v.playsInline = true; v.src = url;
+  try {
+    await new Promise((res, rej) => { v.onloadeddata = res; v.onerror = () => rej(new Error("bad")); });
+    if (!(v.duration > 0) || v.duration > MAX_SEC + 0.5) return { ok: false, why: "This video is too long. Maximum is " + MAX_SEC + " seconds." };
+    for (const f of [0.1, 0.5, 0.9]) {
+      const s = await scanPhoto(await grabFrame(v, v.duration * f));
+      if (!s.ok) return { ok: false, why: s.why.replace(/photo/g, "video") };
+    }
+    return { ok: true };
+  } catch (e) { return { ok: false, why: "Could not read this video. Try another MP4 file." }; }
+  finally { URL.revokeObjectURL(url); }
+}
+function uploadVideo(file, onProg) {
+  return new Promise((res, rej) => {
+    const fd = new FormData(); fd.append("file", file); fd.append("upload_preset", UPLOAD_PRESET); fd.append("folder", "postpay");
+    const x = new XMLHttpRequest();
+    x.open("POST", "https://api.cloudinary.com/v1_1/" + CLOUD_NAME + "/video/upload");
+    x.upload.onprogress = e => { if (e.lengthComputable) onProg(Math.round(e.loaded / e.total * 100)); };
+    x.onload = () => { try { const r = JSON.parse(x.responseText); if (x.status === 200 && cvOk(r.public_id)) res(r.public_id); else rej(new Error("upload")); } catch (e) { rej(e); } };
+    x.onerror = () => rej(new Error("network"));
+    x.send(fd);
+  });
+}
 $("send").onclick = async () => {
-  const text = $("txt").value.trim(), f = $("pic").files[0], m = $("msg"), link = $("yt").value.trim(), vid = link ? ytId(link) : "";
+  const text = $("txt").value.trim(), f = $("pic").files[0], m = $("msg"), link = $("yt").value.trim(), vid = link ? ytId(link) : "", vf = $("vfile").files[0];
   m.textContent = "";
   if (!me) return;
   if (!agreed) { openPolicy(true); return; }
   if (banned) { m.textContent = "Your account has been restricted from posting."; return; }
   if (link && !vid) { m.textContent = "That YouTube link is not valid."; return; }
-  if (!text && !f && !vid) { m.textContent = "Write something, choose a photo or add a video link."; return; }
+  if (vf && vid) { m.textContent = "Choose either a YouTube link or a video file, not both."; return; }
+  if (vf && !CLOUD_READY) { m.textContent = "Video upload is not set up yet."; return; }
+  if (!text && !f && !vid && !vf) { m.textContent = "Write something, choose a photo or add a video link."; return; }
   if (BAD.test(text)) { m.textContent = "Your post has words that are not allowed on PostPay."; return; }
   if (/(https?:|www\.|bit\.ly|t\.me\/|wa\.me\/)/i.test(text)) { m.textContent = "Links are not allowed in text. Add videos only through the YouTube link box."; return; }
   $("send").disabled = true;
   try {
     if (vid) { m.textContent = "Checking video..."; const c = await ytCheck(vid); if (!c.ok) { m.textContent = c.why; $("send").disabled = false; return; } }
-    let img = "";
+    let img = "", cv = "";
     if (f) {
       m.textContent = "Checking photo...";
       img = await compress(f);
       const s = await scanPhoto(img);
       if (!s.ok) { m.textContent = s.why; $("send").disabled = false; return; }
     }
+    if (vf) {
+      m.textContent = "Checking video...";
+      const c = await checkVideo(vf);
+      if (!c.ok) { m.textContent = c.why; $("send").disabled = false; return; }
+      m.textContent = "Uploading video...";
+      cv = await uploadVideo(vf, p => { $("vprog").textContent = "Uploading " + p + "%"; });
+    }
     m.textContent = "";
     const bt = writeBatch(db), ref = doc(collection(db, "posts"));
     bt.set(doc(db, "rate", me.uid), { t: serverTimestamp() });
-    bt.set(ref, { uid: me.uid, name: (me.displayName || "User").slice(0, 60), photo: okPhoto(me.photoURL) ? me.photoURL : "", text, img, vid, createdAt: serverTimestamp(), reporters: [] });
+    bt.set(ref, { uid: me.uid, name: (me.displayName || "User").slice(0, 60), photo: okPhoto(me.photoURL) ? me.photoURL : "", text, img, vid, cv, createdAt: serverTimestamp(), reporters: [] });
     await bt.commit();
-    $("txt").value = ""; $("pic").value = ""; $("yt").value = ""; toast("Posted"); show("home");
-  } catch (e) { m.textContent = "Could not post. Please wait a minute between posts and try again."; }
+    $("txt").value = ""; $("pic").value = ""; $("yt").value = ""; $("vfile").value = ""; $("vprog").textContent = ""; toast("Posted"); show("home");
+  } catch (e) { $("vprog").textContent = ""; m.textContent = "Could not post. Please wait a minute between posts and try again."; }
   $("send").disabled = false;
 };
 
@@ -524,12 +584,21 @@ onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(30
 // View ginti: doosre ke post par, din me 1 baar, tab jab post screen par dikhe
 let watchKey = null;
 const wio = new IntersectionObserver(es => es.forEach(e => {
-  const id = e.target.dataset.vid;
-  e.target.innerHTML = e.isIntersecting ? `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&playsinline=1&rel=0&modestbranding=1" title="Video" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;height:100%;border:0"></iframe>` : "";
+  const t = e.target, cv = t.dataset.cv, id = t.dataset.vid;
+  if (cv) {
+    if (e.isIntersecting) {
+      if (!t.firstChild) {
+        t.innerHTML = `<video src="${cvUrl(cv)}" poster="${cvPoster(cv)}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:contain;background:#000"></video>`;
+        const v = t.firstChild; v.onclick = () => (v.paused ? v.play() : v.pause());
+      } else t.firstChild.play();
+    } else if (t.firstChild) { t.firstChild.pause(); t.innerHTML = ""; }
+    return;
+  }
+  t.innerHTML = e.isIntersecting ? `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&playsinline=1&rel=0&modestbranding=1" title="Video" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;height:100%;border:0"></iframe>` : "";
 }), { threshold: 0.6 });
 const counted = new Set();
 async function countView(p) {
-  if (!me || !agreed || me.uid === p.uid || !(p.vid || p.img)) return;
+  if (!me || !agreed || me.uid === p.uid || !(p.vid || p.cv || p.img)) return;
   const { ym, day } = utc(), vid = `${p.id}_${me.uid}_${day}`;
   if (counted.has(vid) || localStorage.getItem("v_" + vid)) return;
   counted.add(vid);
@@ -556,28 +625,28 @@ function render() {
       <div class="head"><div class="av">${avInner(p.name, p.photo)}</div><div><b>${esc(p.name)}</b><div class="meta2">${t}</div></div></div>
       ${p.text ? `<p>${esc(p.text)}</p>` : ""}
       ${img ? `<img src="${img}" alt="Post photo" loading="lazy">` : ""}
-      ${/^[A-Za-z0-9_-]{11}$/.test(p.vid || "") ? `<iframe src="https://www.youtube-nocookie.com/embed/${p.vid}?rel=0&playsinline=1" title="Video" loading="lazy" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;margin-top:8px"></iframe>` : (img ? "" : `<div class="meta" style="margin-top:6px"><span>Text-only post (does not earn)</span></div>`)}
+      ${cvOk(p.cv) ? `<video src="${cvUrl(p.cv)}" poster="${cvPoster(p.cv)}" controls playsinline preload="metadata" style="width:100%;max-height:70vh;border-radius:12px;margin-top:8px;background:#000"></video>` : /^[A-Za-z0-9_-]{11}$/.test(p.vid || "") ? `<iframe src="https://www.youtube-nocookie.com/embed/${p.vid}?rel=0&playsinline=1" title="Video" loading="lazy" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;margin-top:8px"></iframe>` : (img ? "" : `<div class="meta" style="margin-top:6px"><span>Text-only post (does not earn)</span></div>`)}
       <div class="act">
-        ${/^[A-Za-z0-9_-]{11}$/.test(p.vid || "") ? `<button data-reel="${p.id}">&#9654; Full screen</button>` : ""}
+        ${(cvOk(p.cv) || /^[A-Za-z0-9_-]{11}$/.test(p.vid || "")) ? `<button data-reel="${p.id}">&#9654; Full screen</button>` : ""}
         ${mine || (me && me.uid === ADMIN_UID) ? `<button class="del" data-del="${p.id}">Delete</button>` : ""}
         ${me && !mine && !did ? `<button data-rep="${p.id}">Report</button>` : ""}
         ${did ? `<span class="meta">Reported</span>` : ""}
       </div></article>` + (ad && (i + 1) % AD_EVERY === 0 ? `<div class="ad">Sponsored &middot; ad space</div>` : "");
   };
   $("feed").innerHTML = vis.map((p, i) => card(p, i, true)).join("");
-  const vids = vis.filter(p => /^[A-Za-z0-9_-]{11}$/.test(p.vid || ""));
+  const vids = vis.filter(p => cvOk(p.cv) || /^[A-Za-z0-9_-]{11}$/.test(p.vid || ""));
   const wk = vids.map(p => p.id + ":" + (p.reporters || []).length).join("|") + (me ? me.uid : "");
   if (wk !== watchKey) {
     watchKey = wk;
     $("watchEmpty").hidden = vids.length > 0;
     $("watchList").innerHTML = vids.map(p => {
       const mine = me && me.uid === p.uid, did = me && (p.reporters || []).includes(me.uid);
-      return `<article class="reel" data-pid="${p.id}"><div class="wv" data-vid="${p.vid}" style="background:#000 url(https://i.ytimg.com/vi/${p.vid}/hqdefault.jpg) center/cover no-repeat"></div><div class="edge l"></div><div class="edge r"></div><div class="edge t"></div>
-        <div class="rbtns"><button data-wprev aria-label="Previous video">&#9650;</button><button data-wnext aria-label="Next video">&#9660;</button></div>
+      return `<article class="reel" data-pid="${p.id}"><div class="wv" ${cvOk(p.cv) ? `data-cv="${p.cv}"` : `data-vid="${p.vid}"`} style="background:#000 url(${cvOk(p.cv) ? cvPoster(p.cv) : "https://i.ytimg.com/vi/" + p.vid + "/hqdefault.jpg"}) center/cover no-repeat"></div><div class="edge l"></div><div class="edge r"></div><div class="edge t"></div>
+        <div class="rbtns">${cvOk(p.cv) ? `<button data-wmute aria-label="Sound">&#128263;</button>` : ""}<button data-wprev aria-label="Previous video">&#9650;</button><button data-wnext aria-label="Next video">&#9660;</button></div>
         <div class="rinfo"><div class="head"><div class="av">${avInner(p.name, p.photo)}</div><b>${esc(p.name)}</b></div>
           ${p.text ? `<p>${esc(p.text)}</p>` : ""}
           <div class="act">
-            <a class="ylink" href="https://youtu.be/${p.vid}" target="_blank" rel="noopener noreferrer">Open on YouTube</a>
+            ${p.vid ? `<a class="ylink" href="https://youtu.be/${p.vid}" target="_blank" rel="noopener noreferrer">Open on YouTube</a>` : ""}
             ${mine || (me && me.uid === ADMIN_UID) ? `<button class="del" data-del="${p.id}">Delete</button>` : ""}
             ${me && !mine && !did ? `<button data-rep="${p.id}">Report</button>` : ""}
             ${did ? `<span class="meta">Reported</span>` : ""}
@@ -594,7 +663,7 @@ function render() {
     else terms.push(w);
   });
   const hasTerm = terms.length > 0;
-  const typeOk = p => !type || (type === "video" ? !!p.vid : !!p.img);
+  const typeOk = p => !type || (type === "video" ? !!(p.vid || p.cv) : !!p.img);
   const termOk = p => terms.every(w => ((p.name || "") + " " + (p.text || "")).toLowerCase().includes(w));
   const authors = () => { const m = {}; vis.forEach(p => { if (!hasTerm || terms.every(w => (p.name || "").toLowerCase().includes(w))) { m[p.uid] = m[p.uid] || { uid: p.uid, name: p.name, photo: p.photo, n: 0 }; m[p.uid].n++; } }); return Object.values(m); };
   let out = "";
@@ -616,7 +685,7 @@ function render() {
   document.querySelectorAll("[data-reel]").forEach(b => b.onclick = () => openReel(b.dataset.reel));
   document.querySelectorAll("[data-del]").forEach(b => b.onclick = () => confirm("Delete this post?") && deleteDoc(doc(db, "posts", b.dataset.del)));
   document.querySelectorAll("[data-rep]").forEach(b => b.onclick = () => confirm("Report this post as breaking the rules?") && updateDoc(doc(db, "posts", b.dataset.rep), { reporters: arrayUnion(me.uid) }));
-  document.querySelectorAll("article[data-pid]").forEach(a => { const p = posts.find(x => x.id === a.dataset.pid); if (p && (p.vid || p.img)) io.observe(a); });
+  document.querySelectorAll("article[data-pid]").forEach(a => { const p = posts.find(x => x.id === a.dataset.pid); if (p && (p.vid || p.cv || p.img)) io.observe(a); });
 }
 
 // ===== Admin: mahine ka hisaab =====
@@ -626,7 +695,7 @@ $("calc").onclick = async () => {
   $("adminOut").textContent = "Calculating...";
   const s = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(200)));
   const by = {};
-  s.forEach(d => { const x = d.data(), v = (x.vid || x.img) ? (x["v" + ym] || 0) : 0; if (v) { by[x.uid] = by[x.uid] || { uid: x.uid, name: x.name, views: 0 }; by[x.uid].views += v; } });
+  s.forEach(d => { const x = d.data(), v = (x.vid || x.cv || x.img) ? (x["v" + ym] || 0) : 0; if (v) { by[x.uid] = by[x.uid] || { uid: x.uid, name: x.name, views: 0 }; by[x.uid].views += v; } });
   const rows = Object.values(by), total = rows.reduce((a, r) => a + r.views, 0), pool = earn * SHARE;
   const us = await getDocs(collection(db, "users")), upi = {};
   us.forEach(d => upi[d.id] = d.data().upi || "");
@@ -671,7 +740,7 @@ async function loadDash() {
   try {
     const s = await getDocs(query(collection(db, "posts"), where("uid", "==", me.uid)));
     let views = 0, n = 0;
-    s.forEach(d => { const x = d.data(); n++; if (x.vid || x.img) views += x["v" + ym] || 0; });
+    s.forEach(d => { const x = d.data(); n++; if (x.vid || x.cv || x.img) views += x["v" + ym] || 0; });
     $("dViews").textContent = $("sViews").textContent = views;
     $("sPosts").textContent = n;
     const t = views >= 1000 ? ["Gold Tier", "t-gold"] : views >= 100 ? ["Silver Tier", "t-silver"] : ["Bronze Tier", ""];
@@ -719,6 +788,8 @@ $("loadRep").onclick = () => {
 $("watchBack").onclick = () => show("home");
 $("watchBtn").onclick = () => show("watch");
 $("watchList").onclick = e => {
+  const mb = e.target.closest("[data-wmute]");
+  if (mb) { const v = mb.closest(".reel").querySelector("video"); if (v) { v.muted = !v.muted; mb.innerHTML = v.muted ? "&#128263;" : "&#128266;"; } return; }
   const b = e.target.closest("[data-wnext],[data-wprev]");
   if (!b) return;
   const L = $("watchList");
