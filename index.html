@@ -482,12 +482,22 @@ async function ytCheck(id) {
 }
 function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
 let nsfwModel = null;
+async function loadAny(urls, ready) {
+  for (const u of urls) { try { await loadScript(u); if (ready()) return; } catch (e) {} }
+  throw new Error("could not download the scanner script");
+}
 async function getNsfw() {
   if (nsfwModel) return nsfwModel;
-  if (!window.tf) await loadScript("https://unpkg.com/@tensorflow/tfjs");
-  if (!window.nsfwjs) await loadScript("https://unpkg.com/nsfwjs");
-  nsfwModel = await window.nsfwjs.load();
-  return nsfwModel;
+  if (!window.tf) await loadAny(["https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js", "https://unpkg.com/@tensorflow/tfjs@4.22.0/dist/tf.min.js"], () => window.tf);
+  if (!window.nsfwjs) await loadAny(["https://unpkg.com/nsfwjs", "https://cdn.jsdelivr.net/npm/nsfwjs/dist/browser/nsfwjs.min.js"], () => window.nsfwjs);
+  const tries = [
+    () => window.nsfwjs.load(),
+    () => window.nsfwjs.load("MobileNetV2"),
+    () => window.nsfwjs.load("https://cdn.jsdelivr.net/gh/infinitered/nsfwjs@master/models/mobilenet_v2/", { size: 224 })
+  ];
+  let err = null;
+  for (const t of tries) { try { nsfwModel = await t(); return nsfwModel; } catch (e) { err = e; console.error(e); } }
+  throw err || new Error("model did not load");
 }
 async function scanPhoto(dataUrl) {
   try {
@@ -496,7 +506,7 @@ async function scanPhoto(dataUrl) {
     const p = {}; (await model.classify(img)).forEach(x => { p[x.className] = x.probability; });
     if ((p.Porn || 0) + (p.Hentai || 0) >= 0.3 || (p.Sexy || 0) >= 0.75) return { ok: false, why: "This photo looks inappropriate and cannot be posted." };
     return { ok: true };
-  } catch (e) { return { ok: false, why: "Photo safety check could not load. Check your internet and try again." }; }
+  } catch (e) { console.error(e); return { ok: false, why: "Photo safety check could not load (" + String((e && e.message) || "unknown").slice(0, 80) + "). Check your internet and try again." }; }
 }
 function grabFrame(v, t) {
   return new Promise((res, rej) => {
