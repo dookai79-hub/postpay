@@ -542,8 +542,8 @@ function uploadVideo(file, onProg) {
     const x = new XMLHttpRequest();
     x.open("POST", "https://api.cloudinary.com/v1_1/" + CLOUD_NAME + "/video/upload");
     x.upload.onprogress = e => { if (e.lengthComputable) onProg(Math.round(e.loaded / e.total * 100)); };
-    x.onload = () => { try { const r = JSON.parse(x.responseText); if (x.status === 200 && cvOk(r.public_id)) res(r.public_id); else rej(new Error("upload")); } catch (e) { rej(e); } };
-    x.onerror = () => rej(new Error("network"));
+    x.onload = () => { try { const r = JSON.parse(x.responseText); if (x.status === 200 && cvOk(r.public_id)) res(r.public_id); else rej(Object.assign(new Error((r.error && r.error.message) || ("status " + x.status)), { stage: "upload" })); } catch (e) { rej(Object.assign(new Error("bad reply from video server"), { stage: "upload" })); } };
+    x.onerror = () => rej(Object.assign(new Error("network error"), { stage: "upload" }));
     x.send(fd);
   });
 }
@@ -582,7 +582,7 @@ $("send").onclick = async () => {
     bt.set(ref, { uid: me.uid, name: (me.displayName || "User").slice(0, 60), photo: okPhoto(me.photoURL) ? me.photoURL : "", text, img, vid, cv, createdAt: serverTimestamp(), reporters: [] });
     await bt.commit();
     $("txt").value = ""; $("pic").value = ""; $("yt").value = ""; $("vfile").value = ""; $("vprog").textContent = ""; toast("Posted"); show("home");
-  } catch (e) { $("vprog").textContent = ""; m.textContent = "Could not post. Please wait a minute between posts and try again."; }
+  } catch (e) { console.error(e); $("vprog").textContent = ""; m.textContent = e && e.stage === "upload" ? "Video upload failed: " + String(e.message).slice(0, 120) : "Could not post" + (e && e.code ? " (" + e.code + ")" : "") + ". Please wait a minute between posts and try again."; }
   $("send").disabled = false;
 };
 
