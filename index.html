@@ -142,11 +142,18 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 .setrow span{flex:1}.setrow em{font-style:normal;color:var(--mute);font-size:26px}
 #openSet{border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:var(--card2)}
 .post{content-visibility:auto;contain-intrinsic-size:auto 480px}
+.adwrap{margin-bottom:18px}
+.adlabel{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#9ca3b5;margin:0 4px 6px}
+.adslot iframe{display:block;width:100%;height:250px;border:0;border-radius:16px;background:var(--card)}
+.navav{width:34px;height:34px;border-radius:50%;object-fit:cover;display:block;border:2px solid transparent;box-sizing:border-box}
+#nav button.on .navav{border-color:#7c3aed}
+.gear{width:40px;height:40px;min-height:40px;padding:0;border-radius:50%;background:var(--card);border:1px solid var(--line);color:var(--ink);box-shadow:none;display:flex;align-items:center;justify-content:center}
+.gear[hidden]{display:none}
 </style>
 </head>
 <body>
 <noscript><p style="padding:20px;color:#fff">PostPay needs JavaScript. Please enable it in your browser.</p></noscript>
-<header><h1><span class="logo">P</span>Post<span class="grad">Pay</span></h1></header>
+<header><h1><span class="logo">P</span>Post<span class="grad">Pay</span></h1><button class="gear" id="gear" aria-label="Settings" title="Settings" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></header>
 <main>
   <div class="view" id="v-home">
     <section class="hero" id="login">
@@ -169,18 +176,11 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
         <div class="mini"><span>Latest earnings</span><b class="green" id="dEarn">Rs 0.00</b></div>
       </div>
       <div class="mint"><div><b>Post a video or photo</b><p>Earn from every view on your posts</p></div><button id="mintBtn">Post now</button></div>
-      <h3 class="sec">Explore</h3>
-      <div class="tiles">
-        <button data-go="videos"><i>&#9654;</i>Videos</button>
-        <button data-go="photos"><i>&#9635;</i>Photos</button>
-        <button data-go="people"><i>&#9679;</i>People</button>
-        <button data-go="me"><i>&#8377;</i>Earn</button>
-      </div>
       <div class="card"><b>Top creators this month</b><div class="lb small" id="lb">Not published yet.</div></div>
       <div class="refer"><div><b>Invite friends</b><p>Share PostPay with your friends</p></div><button id="inviteBtn">Share</button></div>
       <div class="stats"><div><span>Rank</span><b id="sRank">-</b></div><div><span>Views</span><b id="sViews">0</b></div><div><span>Posts</span><b id="sPosts">0</b></div></div>
     </div>
-    <div class="ad">Sponsored &middot; ad space</div>
+    <div class="adwrap"><div class="adlabel">Sponsored</div><div class="adslot"></div></div>
     <h3 class="sec">Latest posts</h3>
     <div id="feed"><p class="small">Loading posts...</p></div>
     <div class="row" style="justify-content:center;margin:0 0 18px"><button class="ghost" id="moreBtn" hidden>Load more</button></div>
@@ -222,7 +222,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
       <b>My earnings</b> <span class="small" id="who"></span>
       <div id="mineBox" class="small">This month's earnings have not been published yet.</div>
       <p class="small" id="reqMsg"></p>
-      <button class="setrow" id="openSet" style="margin-top:14px"><i>&#9881;</i><span>Settings</span><em>&rsaquo;</em></button>
+      
     
     </section>
     
@@ -340,7 +340,9 @@ const CONTACT_EMAIL = "dookai79@gmail.com";
 // =========================================================
 const SHARE = 0.3;   // creators ka hissa (30%), baaki 70% tumhara
 const MIN_PAY = 100; // kam se kam itna hone par request kar sakte hain (Rs)
-const AD_EVERY = 3;  // har 3 post ke baad 1 ad
+const AD_EVERY = 5;  // har 5 post ke baad 1 ad
+const AD_SRC = "https://bicea.org/21/2cb84c7d0c1a2d32addf2d392ba070cd";
+const AD_BOX = "container-2cb84c7d0c1a2d32addf2d392ba070cd";
 
 // Clickjacking se bachav: kisi aur site ke frame me site nahi chalegi
 if (window.top !== window.self) { try { window.top.location = window.self.location; } catch (e) { document.body.innerHTML = ""; } }
@@ -350,7 +352,9 @@ const $ = id => document.getElementById(id);
 const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const okPhoto = u => typeof u === "string" && u.length <= 300 && /^https:\/\/[a-z0-9-]+\.googleusercontent\.com\//.test(u);
 const avInner = (name, photo) => okPhoto(photo) ? `<img src="${esc(photo)}" alt="" referrerpolicy="no-referrer">` : esc((name || "U").trim().charAt(0).toUpperCase());
-let me = null, posts = [], payout = null, calcRows = null, agreed = false, banned = false, skipFocus = false, lbRows = [], chip = "all", sel = null, myUpi = "";
+const NAV_ME_SVG = $("n-me").innerHTML;
+const setNavAvatar = u => { $("n-me").innerHTML = u && okPhoto(u.photoURL) ? `<img class="navav" src="${esc(u.photoURL)}" alt="" referrerpolicy="no-referrer">` : NAV_ME_SVG; };
+let me = null, posts = [], payout = null, curView = "home", backView = "home", calcRows = null, agreed = false, banned = false, skipFocus = false, lbRows = [], chip = "all", sel = null, myUpi = "";
 
 const utc = () => { const d = new Date(); const p = n => String(n).padStart(2, "0");
   return { ym: `${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}`, day: `${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}${p(d.getUTCDate())}` }; };
@@ -384,7 +388,8 @@ document.querySelectorAll(".signin").forEach(b => b.onclick = () => signInWithPo
 $("out").onclick = () => signOut(auth).then(() => show("home"));
 function show(t) {
   ["home", "add", "search", "me", "settings", "watch"].forEach(k => { $("v-" + k).hidden = k !== t; const nb = $("n-" + k); if (nb) nb.classList.toggle("on", k === t); });
-  if (t === "settings") $("n-me").classList.add("on");
+  if (t === "settings" && curView !== "settings") backView = curView;
+  curView = t;
   document.body.style.overflow = t === "watch" ? "hidden" : "";
   window.scrollTo(0, 0);
   if (t === "search" && !skipFocus) $("q").focus();
@@ -404,6 +409,8 @@ onAuthStateChanged(auth, async u => {
   $("newpost").hidden = $("mine").hidden = !u;
   $("needAdd").hidden = $("needMe").hidden = !!u;
   $("who").textContent = u ? "(" + (u.displayName || "") + ")" : "";
+  setNavAvatar(u);
+  $("gear").hidden = !u;
   $("quick").hidden = !u; $("qav").innerHTML = avInner(u ? (u.displayName || "U") : "U", u ? u.photoURL : ""); $("pname").textContent = u ? (u.displayName || "User") : "User";
   $("login").hidden = !!u;
   $("admin").hidden = !(u && u.uid === ADMIN_UID);
@@ -663,7 +670,7 @@ function render() {
         ${mine || (me && me.uid === ADMIN_UID) ? `<button class="del" data-del="${p.id}">Delete</button>` : ""}
         ${me && !mine && !did ? `<button data-rep="${p.id}">Report</button>` : ""}
         ${did ? `<span class="meta">Reported</span>` : ""}
-      </div></article>` + (ad && (i + 1) % AD_EVERY === 0 ? `<div class="ad">Sponsored &middot; ad space</div>` : "");
+      </div></article>` + (ad && (i + 1) % AD_EVERY === 0 ? `<div class="adwrap"><div class="adlabel">Sponsored</div><div class="adslot"></div></div>` : "");
   };
   $("feed").innerHTML = vis.map((p, i) => card(p, i, true)).join("");
   const vids = vis.filter(p => cvOk(p.cv) || /^[A-Za-z0-9_-]{11}$/.test(p.vid || ""));
@@ -714,6 +721,7 @@ function render() {
   $("results").innerHTML = out;
   document.querySelectorAll("[data-uid]").forEach(b => b.onclick = () => { sel = b.dataset.uid; render(); window.scrollTo(0, 0); });
   if ($("selBack")) $("selBack").onclick = () => { sel = null; render(); };
+  fillAds();
   document.querySelectorAll("[data-reel]").forEach(b => b.onclick = () => openReel(b.dataset.reel));
   document.querySelectorAll("[data-del]").forEach(b => b.onclick = () => confirm("Delete this post?") && deleteDoc(doc(db, "posts", b.dataset.del)));
   document.querySelectorAll("[data-rep]").forEach(b => b.onclick = () => confirm("Report this post as breaking the rules?") && updateDoc(doc(db, "posts", b.dataset.rep), { reporters: arrayUnion(me.uid) }));
@@ -803,8 +811,8 @@ $("inviteBtn").onclick = async () => {
 };
 
 // ===== Settings =====
-$("openSet").onclick = () => show("settings");
-$("setBack").onclick = () => show("me");
+$("gear").onclick = () => show("settings");
+$("setBack").onclick = () => show(backView || "home");
 $("rowRules").onclick = () => openPolicy(false);
 $("rowPriv").onclick = () => openPolicy(false, "polPriv");
 $("rowContact").href = "mailto:" + CONTACT_EMAIL;
@@ -837,6 +845,21 @@ function openReel(pid) {
     if (el) $("watchList").scrollTo({ top: el.offsetTop, behavior: "instant" });
   }, 80);
 }
+
+// ===== Ads (Adsterra) =====
+function fillAds() {
+  document.querySelectorAll(".adslot:not([data-f])").forEach(s => {
+    s.setAttribute("data-f", "1");
+    const f = document.createElement("iframe");
+    f.setAttribute("loading", "lazy");
+    f.setAttribute("title", "Advertisement");
+    f.setAttribute("scrolling", "no");
+    f.setAttribute("sandbox", "allow-scripts allow-popups allow-popups-to-escape-sandbox");
+    f.srcdoc = '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;background:transparent}</style></head><body><script async="async" data-cfasync="false" src="' + AD_SRC + '"><\/script><div id="' + AD_BOX + '"></div></body></html>';
+    s.appendChild(f);
+  });
+}
+fillAds();
 </script>
 </body>
 </html>
