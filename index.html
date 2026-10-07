@@ -7,18 +7,22 @@
 <meta property="og:description" content="Share photos and videos. 30% of ad revenue is shared with creators.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='26' fill='%2322c55e'/%3E%3Ctext x='50' y='70' font-size='62' font-weight='800' text-anchor='middle' fill='%2303200f' font-family='Arial'%3EP%3C/text%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
+<link rel="dns-prefetch" href="https://i.ytimg.com">
 <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>PostPay - Post, Get Views, Earn</title>
 <meta name="description" content="Share photos and videos. 30% of ad revenue is shared with creators.">
 <style>
-:root{--bg:#e9e7f1;--card:#f5f4fa;--card2:#e6e4ef;--ink:#1b1a2c;--mute:#666480;--line:#d9d6e6;--acc:#7c3aed;--acc2:#c026d3;--bad:#e11d48;--onacc:#ffffff;--shadow:0 6px 22px rgba(40,30,80,.08)}
+:root{--bg:#e9e7f1;--card:#f5f4fa;--card2:#e6e4ef;--ink:#1b1a2c;--mute:#666480;--line:#d9d6e6;--acc:#7c3aed;--acc2:#c026d3;--bad:#e11d48;--onacc:#ffffff;--shadow:0 2px 10px rgba(40,30,80,.07)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 button:focus:not(:focus-visible){outline:none}
-body{margin:0;color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI","Noto Sans Devanagari",sans-serif;background:radial-gradient(800px 420px at 88% -10%,rgba(124,58,237,.13),transparent 60%),radial-gradient(700px 360px at -10% 4%,rgba(192,38,211,.08),transparent 60%),var(--bg) fixed}
+body{margin:0;color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI","Noto Sans Devanagari",sans-serif;background:radial-gradient(800px 420px at 88% -10%,rgba(124,58,237,.13),transparent 60%),radial-gradient(700px 360px at -10% 4%,rgba(192,38,211,.08),transparent 60%),var(--bg)}
 .grad{background:linear-gradient(90deg,#7c3aed,#c026d3);-webkit-background-clip:text;background-clip:text;color:transparent}
-header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(233,231,241,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(233,231,241,.97);border-bottom:1px solid var(--line)}
 header h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.4px;display:flex;align-items:center;gap:10px}
 .logo{width:34px;height:34px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800;background:linear-gradient(135deg,#7c3aed,#c026d3)}
 main{max-width:640px;margin:0 auto;padding:20px 16px 8px}
@@ -97,7 +101,7 @@ footer a{color:var(--mute)}
 .chips button.on{color:#fff;background:linear-gradient(135deg,#7c3aed,#c026d3);border-color:transparent}
 .person{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:18px;padding:12px 14px;margin-bottom:12px;background:var(--card);color:var(--ink);border:1px solid var(--line)}
 .person span.t{display:flex;flex-direction:column;line-height:1.3}
-#nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:10;display:flex;gap:4px;padding:7px;width:min(92vw,400px);border-radius:999px;background:rgba(245,244,250,.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);box-shadow:0 14px 36px rgba(20,20,31,.16)}
+#nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:10;display:flex;gap:4px;padding:7px;width:min(92vw,400px);border-radius:999px;background:rgba(245,244,250,.98);border:1px solid var(--line);box-shadow:0 14px 36px rgba(20,20,31,.16)}
 #nav button{flex:1;height:54px;min-height:54px;padding:0;border-radius:999px;background:transparent;color:#9ca3b5;box-shadow:none;display:flex;align-items:center;justify-content:center}
 #nav svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 #nav button.on{background:rgba(124,58,237,.10);color:#7c3aed}
@@ -137,6 +141,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 .setrow i{font-style:normal;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(124,58,237,.10);color:#7c3aed;font-size:18px;flex:none}
 .setrow span{flex:1}.setrow em{font-style:normal;color:var(--mute);font-size:26px}
 #openSet{border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:var(--card2)}
+.post{content-visibility:auto;contain-intrinsic-size:auto 480px}
 </style>
 </head>
 <body>
@@ -178,6 +183,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
     <div class="ad">Sponsored &middot; ad space</div>
     <h3 class="sec">Latest posts</h3>
     <div id="feed"><p class="small">Loading posts...</p></div>
+    <div class="row" style="justify-content:center;margin:0 0 18px"><button class="ghost" id="moreBtn" hidden>Load more</button></div>
     <div id="empty" class="empty" hidden><div class="eico">&#10022;</div><b>No posts yet</b><p>Be the first to share something and start earning.</p><button class="pri" id="emptyBtn">Create first post</button></div>
   </div>
 
@@ -277,6 +283,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
         <li>Accounts that break these rules are permanently banned and unpaid earnings can be withheld.</li>
         <li>Only post photos and videos that are yours or that you have permission to use. You are responsible for everything you post.</li>
         <li>Tap "Report" on any post that breaks the rules. A post with 3 reports is hidden automatically. The admin can remove posts that break the rules.</li>
+        <li>Each user can upload 1 video per day (YouTube links are not limited).</li>
       </ul>
       <h4>Earnings</h4>
       <ul>
@@ -323,6 +330,7 @@ const CLOUD_NAME = "dk2kgktv";
 const UPLOAD_PRESET = "postpay_unsigned";
 const MAX_MB = 25, MAX_SEC = 60;
 const CLOUD_READY = !CLOUD_NAME.startsWith("YAHAN") && !UPLOAD_PRESET.startsWith("YAHAN");
+const istKey = () => { const d = new Date(Date.now() + 330 * 60000), p = n => String(n).padStart(2, "0"); return d.getUTCFullYear() + p(d.getUTCMonth() + 1) + p(d.getUTCDate()); };
 const cvOk = s => /^[A-Za-z0-9_\/-]{1,100}$/.test(s || "");
 const cvUrl = id => `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/f_mp4,vc_h264,q_auto:low,w_540/${id}.mp4`;
 const cvPoster = id => `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/so_1,f_jpg,w_540/${id}.jpg`;
@@ -384,7 +392,8 @@ function show(t) {
   if (t === "home") loadDash();
 }
 ["home", "watch", "add", "search", "me"].forEach(k => $("n-" + k).onclick = () => show(k));
-$("q").oninput = () => { sel = null; render(); };
+let qTimer = null;
+$("q").oninput = () => { sel = null; clearTimeout(qTimer); qTimer = setTimeout(render, 220); };
 document.querySelectorAll("#chips button").forEach(b => b.onclick = () => {
   chip = b.dataset.c; sel = null;
   document.querySelectorAll("#chips button").forEach(x => x.classList.toggle("on", x === b));
@@ -455,12 +464,12 @@ function compress(file) {
   return new Promise((res, rej) => {
     const img = new Image();
     img.onload = () => {
-      const s = Math.min(1, 800 / Math.max(img.width, img.height));
+      const s = Math.min(1, 720 / Math.max(img.width, img.height));
       const c = document.createElement("canvas");
       c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
       c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
       let q = 0.7, out = c.toDataURL("image/jpeg", q);
-      while (out.length > 300000 && q > 0.2) { q -= 0.1; out = c.toDataURL("image/jpeg", q); }
+      while (out.length > 160000 && q > 0.3) { q -= 0.1; out = c.toDataURL("image/jpeg", q); }
       out.length > 390000 ? rej(new Error("big")) : res(out);
     };
     img.onerror = () => rej(new Error("bad"));
@@ -570,6 +579,7 @@ $("send").onclick = async () => {
       if (!s.ok) { m.textContent = s.why; $("send").disabled = false; return; }
     }
     if (vf) {
+      if ((await getDoc(doc(db, "vlimit", me.uid + "_" + istKey()))).exists()) { m.textContent = "You can upload only 1 video per day. Please try again tomorrow."; $("send").disabled = false; return; }
       m.textContent = "Checking video...";
       const c = await checkVideo(vf);
       if (!c.ok) { m.textContent = c.why; $("send").disabled = false; return; }
@@ -579,6 +589,7 @@ $("send").onclick = async () => {
     m.textContent = "";
     const bt = writeBatch(db), ref = doc(collection(db, "posts"));
     bt.set(doc(db, "rate", me.uid), { t: serverTimestamp() });
+    if (cv) bt.set(doc(db, "vlimit", me.uid + "_" + istKey()), { t: serverTimestamp() });
     bt.set(ref, { uid: me.uid, name: (me.displayName || "User").slice(0, 60), photo: okPhoto(me.photoURL) ? me.photoURL : "", text, img, vid, cv, createdAt: serverTimestamp(), reporters: [] });
     await bt.commit();
     $("txt").value = ""; $("pic").value = ""; $("yt").value = ""; $("vfile").value = ""; $("vprog").textContent = ""; toast("Posted"); show("home");
@@ -586,10 +597,17 @@ $("send").onclick = async () => {
   $("send").disabled = false;
 };
 
-onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(30)), s => {
-  posts = s.docs.map(d => ({ id: d.id, ...d.data() }));
-  render();
-}, () => { $("feed").innerHTML = '<p class="small">Could not load posts. Please check the Firebase config.</p>'; });
+let postLimit = 12, unsubPosts = null;
+function subscribePosts() {
+  if (unsubPosts) unsubPosts();
+  unsubPosts = onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(postLimit)), s => {
+    posts = s.docs.map(d => ({ id: d.id, ...d.data() }));
+    $("moreBtn").hidden = posts.length < postLimit;
+    render();
+  }, () => { $("feed").innerHTML = '<p class="small">Could not load posts. Please check the Firebase config.</p>'; });
+}
+subscribePosts();
+$("moreBtn").onclick = () => { postLimit += 12; subscribePosts(); };
 
 // View ginti: doosre ke post par, din me 1 baar, tab jab post screen par dikhe
 let watchKey = null;
@@ -624,7 +642,11 @@ const io = new IntersectionObserver(es => es.forEach(e => {
   if (e.isIntersecting) { io.unobserve(e.target); const p = posts.find(x => x.id === e.target.dataset.pid); if (p) countView(p); }
 }), { threshold: 0.6 });
 
+let lastKey = "";
 function render() {
+  const key = posts.map(p => p.id + ":" + (p.reporters || []).length + ":" + (p.createdAt ? 1 : 0)).join("|") + "#" + (me ? me.uid : "") + "#" + chip + "#" + sel + "#" + ($("q").value || "") + "#" + agreed;
+  if (key === lastKey) return;
+  lastKey = key;
   const vis = posts.filter(p => (p.reporters || []).length < 3);
   $("empty").hidden = vis.length > 0;
   const card = (p, i, ad) => {
@@ -634,7 +656,7 @@ function render() {
     return `<article class="card post" data-pid="${p.id}">
       <div class="head"><div class="av">${avInner(p.name, p.photo)}</div><div><b>${esc(p.name)}</b><div class="meta2">${t}</div></div></div>
       ${p.text ? `<p>${esc(p.text)}</p>` : ""}
-      ${img ? `<img src="${img}" alt="Post photo" loading="lazy">` : ""}
+      ${img ? `<img src="${img}" alt="Post photo" loading="lazy" decoding="async">` : ""}
       ${cvOk(p.cv) ? `<video src="${cvUrl(p.cv)}" poster="${cvPoster(p.cv)}" controls playsinline preload="metadata" style="width:100%;max-height:70vh;border-radius:12px;margin-top:8px;background:#000"></video>` : /^[A-Za-z0-9_-]{11}$/.test(p.vid || "") ? `<iframe src="https://www.youtube-nocookie.com/embed/${p.vid}?rel=0&playsinline=1" title="Video" loading="lazy" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;margin-top:8px"></iframe>` : (img ? "" : `<div class="meta" style="margin-top:6px"><span>Text-only post (does not earn)</span></div>`)}
       <div class="act">
         ${(cvOk(p.cv) || /^[A-Za-z0-9_-]{11}$/.test(p.vid || "")) ? `<button data-reel="${p.id}">&#9654; Full screen</button>` : ""}
@@ -744,8 +766,11 @@ async function loadLb() {
     if (s.exists()) { lbRows = s.data().rows || []; $("lb").innerHTML = lbRows.length ? lbRows.slice(0, 5).map((r, i) => `<div class="r"><span><span class="rk">${i + 1}</span>${esc(r.name)}</span><span>${r.views} views</span></div>`).join("") : "Not published yet."; }
   } catch (e) {}
 }
+let lastDash = 0;
 async function loadDash() {
   if (!me) return;
+  if (Date.now() - lastDash < 30000) return;
+  lastDash = Date.now();
   const { ym } = utc();
   try {
     const s = await getDocs(query(collection(db, "posts"), where("uid", "==", me.uid)));
