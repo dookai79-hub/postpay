@@ -268,7 +268,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
   <button id="n-search" aria-label="Search" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
   <button id="n-me" aria-label="Profile" title="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></button>
 </nav>
-<footer>PostPay &copy; 2026 &middot; <a href="#" id="polLink" style="color:inherit">Rules &amp; Privacy Policy</a> &middot; b13</footer>
+<footer>PostPay &copy; 2026 &middot; <a href="#" id="polLink" style="color:inherit">Rules &amp; Privacy Policy</a> &middot; b14</footer>
 
 <div id="policy" class="modal" hidden>
   <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="polT">
@@ -856,7 +856,7 @@ function fillAds() {
     f.setAttribute("scrolling", "no");
     f.setAttribute("sandbox", "allow-scripts allow-popups allow-popups-to-escape-sandbox");
     f.srcdoc = '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;background:transparent}</style></head><body>'
-      + '<script>window.addEventListener("error",function(e){parent.postMessage({ad:"error",msg:String(e.message||"")},"*")},true);setTimeout(function(){var c=document.getElementById("' + AD_BOX + '");parent.postMessage({ad:(c&&c.children.length)?"filled":"empty"},"*")},7000);<\/script>'
+      + '<script>window.addEventListener("error",function(e){parent.postMessage({ad:"error",msg:String(e.message||"")},"*")},true);var n=0,t=setInterval(function(){var c=document.getElementById("' + AD_BOX + '");n++;if(c&&c.children.length){clearInterval(t);parent.postMessage({ad:"filled"},"*")}else if(n>=10){clearInterval(t);parent.postMessage({ad:"empty"},"*")}},2000);<\/script>'
       + '<script async="async" data-cfasync="false" src="' + AD_SRC + '" onerror="parent.postMessage({ad:\'blocked\'},\'*\')"><\/script><div id="' + AD_BOX + '"></div></body></html>';
     s.appendChild(f);
   });
@@ -868,6 +868,7 @@ window.addEventListener("message", ev => {
   const fr = [...document.querySelectorAll(".adslot iframe")].find(f => f.contentWindow === ev.source);
   if (!fr) return;
   const wrap = fr.closest(".adwrap"), lab = wrap.querySelector(".adlabel"), isAdmin = /[?&]ads=debug/.test(location.search) || (me && me.uid === ADMIN_UID);
+  if (d.ad === "filled") wrap.style.display = "";
   if ((d.ad === "empty" || d.ad === "blocked") && !isAdmin) wrap.style.display = "none";
   if (isAdmin) lab.textContent = "Sponsored - status: " + d.ad + (d.msg ? " (" + String(d.msg).slice(0, 60) + ")" : "");
 });
