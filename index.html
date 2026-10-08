@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#e9e7f1">
 <meta property="og:title" content="PostPay - Post, Get Views, Earn">
-<meta property="og:description" content="Share photos and videos. 30% of ad revenue is shared with creators.">
+<meta property="og:description" content="Share photos and videos and earn from your views.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='26' fill='%2322c55e'/%3E%3Ctext x='50' y='70' font-size='62' font-weight='800' text-anchor='middle' fill='%2303200f' font-family='Arial'%3EP%3C/text%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
@@ -14,7 +14,7 @@
 <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>PostPay - Post, Get Views, Earn</title>
-<meta name="description" content="Share photos and videos. 30% of ad revenue is shared with creators.">
+<meta name="description" content="Share photos and videos and earn from your views.">
 <style>
 :root{--bg:#e9e7f1;--card:#f5f4fa;--card2:#e6e4ef;--ink:#1b1a2c;--mute:#666480;--line:#d9d6e6;--acc:#7c3aed;--acc2:#c026d3;--bad:#e11d48;--onacc:#ffffff;--shadow:0 2px 10px rgba(40,30,80,.07)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -159,13 +159,13 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
     <section class="hero" id="login">
       <div class="badge">Free &middot; Photos &middot; Videos &middot; Earnings</div>
       <h2>Post.<br><span class="grad">Get views. Earn.</span></h2>
-      <p>Share your photos or videos. A share of the ad revenue goes straight to creators.</p>
+      <p>Share your photos or videos and get paid for the views they earn.</p>
       <button class="pri big signin">Get started with Google</button>
     <div><button class="ghost big" id="watchBtn" style="margin-top:12px">&#9654; Watch videos</button></div>
     <div class="steps">
       <div class="step"><span class="n">1</span><div><b>Sign in</b><p>Quick login with your Google account.</p></div></div>
       <div class="step"><span class="n">2</span><div><b>Post photos or videos</b><p>Share your own content with everyone.</p></div></div>
-      <div class="step"><span class="n">3</span><div><b>Earn from views</b><p>30% of ad revenue is shared by views.</p></div></div>
+      <div class="step"><span class="n">3</span><div><b>Earn from views</b><p>Get paid based on the views your posts get.</p></div></div>
     </div>
     </section>
     <div id="quick" hidden>
@@ -244,7 +244,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
     </div>
     <section class="card" id="admin" hidden>
       <b>Admin: monthly earnings</b>
-      <div class="row"><input type="text" id="ym" placeholder="Month (e.g. 202610)" style="max-width:150px"><input type="number" id="earn" placeholder="Total ad revenue (Rs)" style="max-width:190px"></div>
+      <div class="row"><input type="text" id="ym" placeholder="Month (e.g. 202610)" style="max-width:150px"><input type="number" id="earn" placeholder="Total ad revenue (Rs)" style="max-width:190px"><input type="number" id="sharep" placeholder="Creators share (%)" style="max-width:170px"></div>
       <div class="row"><button class="pri" id="calc">Calculate</button><button class="ghost" id="pub" disabled>Publish</button></div>
       <div id="adminOut" class="small"></div>
       <div class="row"><button class="ghost" id="loadReq">View payment requests</button></div>
@@ -268,7 +268,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
   <button id="n-search" aria-label="Search" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
   <button id="n-me" aria-label="Profile" title="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></button>
 </nav>
-<footer>PostPay &copy; 2026 &middot; <a href="#" id="polLink" style="color:inherit">Rules &amp; Privacy Policy</a></footer>
+<footer>PostPay &copy; 2026 &middot; <a href="#" id="polLink" style="color:inherit">Rules &amp; Privacy Policy</a> &middot; b13</footer>
 
 <div id="policy" class="modal" hidden>
   <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="polT">
@@ -287,10 +287,10 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
       </ul>
       <h4>Earnings</h4>
       <ul>
-        <li><b>30%</b> of each month's ad revenue is shared among creators based on views on photo and video posts. Text-only posts do not earn.</li>
+        <li>Creators earn based on the views on their photo and video posts. Earnings are calculated every month. Text-only posts do not earn.</li>
         <li>One person counts as 1 view per post per day. Views on your own posts are not counted.</li>
         <li>When your earnings reach <b>Rs 100</b> or more, send a "Payment request". Payment is made by UPI. If you earn less, it carries over to next month.</li>
-        <li>Payments are made only after real ad revenue is received. Earnings are not guaranteed.</li>
+        <li>Payments are made only from real platform earnings. Earnings are not guaranteed.</li>
         <li>Your share will be withheld if fake views or stolen content are found.</li>
       </ul>
       <h4 id="polPriv">Privacy Policy</h4>
@@ -338,7 +338,6 @@ const ADMIN_UID = "J3gudf6qcKflkI7KHneeivYhBxr1";
 // Privacy policy me dikhane ke liye contact email (naya alag email banao)
 const CONTACT_EMAIL = "dookai79@gmail.com";
 // =========================================================
-const SHARE = 0.3;   // creators ka hissa (30%), baaki 70% tumhara
 const MIN_PAY = 100; // kam se kam itna hone par request kar sakte hain (Rs)
 const AD_EVERY = 5;  // har 5 post ke baad 1 ad
 const AD_SRC = "https://bicea.org/21/2cb84c7d0c1a2d32addf2d392ba070cd";
@@ -730,13 +729,14 @@ function render() {
 
 // ===== Admin: mahine ka hisaab =====
 $("calc").onclick = async () => {
-  const ym = $("ym").value.trim(), earn = parseFloat($("earn").value);
+  const ym = $("ym").value.trim(), earn = parseFloat($("earn").value), sp = parseFloat($("sharep").value);
   if (!/^\d{6}$/.test(ym) || !(earn >= 0)) { $("adminOut").textContent = "Enter the month (e.g. 202610) and total revenue."; return; }
+  if (!(sp >= 0 && sp <= 100)) { $("adminOut").textContent = "Enter the creators share in percent (0 to 100)."; return; }
   $("adminOut").textContent = "Calculating...";
   const s = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(200)));
   const by = {};
   s.forEach(d => { const x = d.data(), v = (x.vid || x.cv || x.img) ? (x["v" + ym] || 0) : 0; if (v) { by[x.uid] = by[x.uid] || { uid: x.uid, name: x.name, views: 0 }; by[x.uid].views += v; } });
-  const rows = Object.values(by), total = rows.reduce((a, r) => a + r.views, 0), pool = earn * SHARE;
+  const rows = Object.values(by), total = rows.reduce((a, r) => a + r.views, 0), pool = earn * sp / 100;
   const us = await getDocs(collection(db, "users")), upi = {};
   us.forEach(d => upi[d.id] = d.data().upi || "");
   rows.forEach(r => { r.amount = total ? pool * r.views / total : 0; r.upi = upi[r.uid] || ""; });
@@ -750,10 +750,10 @@ $("pub").onclick = async () => {
   if (!calcRows) return;
   const bt = writeBatch(db);
   calcRows.rows.forEach(r => bt.set(doc(db, "payouts", `${r.uid}_${calcRows.ym}`), { uid: r.uid, name: r.name, ym: calcRows.ym, views: r.views, amount: r.amount }));
-  bt.set(doc(db, "settings", "latest"), { ym: calcRows.ym, earn: calcRows.earn });
+  bt.set(doc(db, "settings", "latest"), { ym: calcRows.ym });
   bt.set(doc(db, "settings", "leaderboard"), { ym: calcRows.ym, rows: calcRows.rows.slice(0, 10).map(r => ({ uid: r.uid, name: r.name, views: r.views })) });
   await bt.commit();
-  payout = { ym: calcRows.ym, earn: calcRows.earn }; showMine();
+  payout = { ym: calcRows.ym }; showMine();
   $("adminOut").insertAdjacentHTML("afterbegin", "<p><b>Published.</b></p>");
 };
 
@@ -867,7 +867,7 @@ window.addEventListener("message", ev => {
   if (!d || !d.ad) return;
   const fr = [...document.querySelectorAll(".adslot iframe")].find(f => f.contentWindow === ev.source);
   if (!fr) return;
-  const wrap = fr.closest(".adwrap"), lab = wrap.querySelector(".adlabel"), isAdmin = me && me.uid === ADMIN_UID;
+  const wrap = fr.closest(".adwrap"), lab = wrap.querySelector(".adlabel"), isAdmin = /[?&]ads=debug/.test(location.search) || (me && me.uid === ADMIN_UID);
   if ((d.ad === "empty" || d.ad === "blocked") && !isAdmin) wrap.style.display = "none";
   if (isAdmin) lab.textContent = "Sponsored - status: " + d.ad + (d.msg ? " (" + String(d.msg).slice(0, 60) + ")" : "");
 });
