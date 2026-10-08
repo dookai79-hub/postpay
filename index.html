@@ -855,11 +855,22 @@ function fillAds() {
     f.setAttribute("title", "Advertisement");
     f.setAttribute("scrolling", "no");
     f.setAttribute("sandbox", "allow-scripts allow-popups allow-popups-to-escape-sandbox");
-    f.srcdoc = '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;background:transparent}</style></head><body><script async="async" data-cfasync="false" src="' + AD_SRC + '"><\/script><div id="' + AD_BOX + '"></div></body></html>';
+    f.srcdoc = '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;background:transparent}</style></head><body>'
+      + '<script>window.addEventListener("error",function(e){parent.postMessage({ad:"error",msg:String(e.message||"")},"*")},true);setTimeout(function(){var c=document.getElementById("' + AD_BOX + '");parent.postMessage({ad:(c&&c.children.length)?"filled":"empty"},"*")},7000);<\/script>'
+      + '<script async="async" data-cfasync="false" src="' + AD_SRC + '" onerror="parent.postMessage({ad:\'blocked\'},\'*\')"><\/script><div id="' + AD_BOX + '"></div></body></html>';
     s.appendChild(f);
   });
 }
 fillAds();
+window.addEventListener("message", ev => {
+  const d = ev.data;
+  if (!d || !d.ad) return;
+  const fr = [...document.querySelectorAll(".adslot iframe")].find(f => f.contentWindow === ev.source);
+  if (!fr) return;
+  const wrap = fr.closest(".adwrap"), lab = wrap.querySelector(".adlabel"), isAdmin = me && me.uid === ADMIN_UID;
+  if ((d.ad === "empty" || d.ad === "blocked") && !isAdmin) wrap.style.display = "none";
+  if (isAdmin) lab.textContent = "Sponsored - status: " + d.ad + (d.msg ? " (" + String(d.msg).slice(0, 60) + ")" : "");
+});
 </script>
 </body>
 </html>
