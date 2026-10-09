@@ -191,16 +191,27 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 .cpill input[type=text]:focus{border:0}
 .cpill input[type=text]::placeholder{color:#8b8fa3}
 #csend{width:40px;height:40px;min-height:40px;padding:0;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,#7c3aed,#c026d3);box-shadow:none}
-/* Profile header */
-.phead{display:flex;align-items:center;gap:22px}
-.pav{width:84px;height:84px;font-size:32px}
-.pstats{flex:1;display:flex;justify-content:space-around;text-align:center}
-.pstats b{display:block;font-size:24px;line-height:1.2}
-.pstats span{display:block;font-size:14px;color:var(--mute)}
-.pnm{display:block;margin-top:12px;font-size:19px}
-.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:18px}
-.vt{position:relative;width:100%;aspect-ratio:3/4;min-height:0;padding:0;border-radius:12px;background:#000 center/cover no-repeat;box-shadow:none;overflow:hidden}
-.vt::after{content:"\25B6";position:absolute;left:8px;bottom:6px;font-size:13px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7)}
+/* Profile (Instagram jaisa) */
+.phead{display:flex;align-items:center;gap:18px}
+.pav{width:84px;height:84px;font-size:32px;flex:none}
+.pright{flex:1;min-width:0}
+.pnm{display:block;font-size:20px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pstats{display:flex;justify-content:space-between;gap:6px;margin-top:10px}
+.pstats b{display:block;font-size:20px;line-height:1.2}
+.pstats span{display:block;font-size:13px;color:var(--mute)}
+.pdash{margin-top:16px;padding:12px 16px;border-radius:14px;background:var(--card2)}
+.pdash b{display:block;font-size:16px}
+.pdash span{display:block;font-size:14px;color:var(--mute)}
+.pbtns{margin-top:12px;flex-wrap:nowrap}
+.pbtns button{flex:1;padding:10px 12px;min-height:42px;font-size:15px}
+.ptabs{display:flex;margin:16px -4px 0;border-bottom:1px solid var(--line)}
+.ptabs button{flex:1;background:transparent;color:var(--mute);border-radius:0;box-shadow:none;min-height:46px;padding:0;font-size:22px;border-bottom:2px solid transparent}
+.ptabs button.on{color:var(--ink);border-bottom-color:var(--ink)}
+.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:4px}
+.vt{position:relative;width:100%;aspect-ratio:3/4;min-height:0;padding:0;border-radius:6px;background:#111;box-shadow:none;overflow:hidden}
+.vt img{width:100%;height:100%;object-fit:cover;display:block}
+.vt::after{content:"\25B6";position:absolute;right:7px;top:6px;font-size:12px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7)}
+.vt i{position:absolute;left:7px;bottom:6px;font-style:normal;font-size:13px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.75)}
 </style>
 </head>
 <body>
@@ -273,12 +284,18 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
     <section class="card" id="profHead" hidden>
       <div class="phead">
         <div class="av pav" id="pav">U</div>
-        <div class="pstats">
-          <div><b id="pPosts">0</b><span>Videos</span></div>
-          <div><b id="pFollowers">0</b><span>Followers</span></div>
+        <div class="pright">
+          <b class="pnm" id="pnm">User</b>
+          <div class="pstats">
+            <div><b id="pPosts">0</b><span>videos</span></div>
+            <div><b id="pFollowers">0</b><span>followers</span></div>
+            <div><b id="pFollowing">0</b><span>following</span></div>
+          </div>
         </div>
       </div>
-      <b class="pnm" id="pnm">User</b>
+      <div class="pdash"><b>Your dashboard</b><span id="pDash">0 views this month</span></div>
+      <div class="row pbtns"><button class="ghost" id="pShare">Share profile</button><button class="ghost" id="pSet">Settings</button></div>
+      <div class="ptabs"><button class="on" aria-label="My videos">&#9638;</button><button id="pTabSaved" aria-label="Saved">&#128278;</button><button id="pTabRep" aria-label="Reposts">&#128257;</button></div>
       <div class="vgrid" id="myGrid"></div>
       <p class="small" id="myGridEmpty" hidden style="text-align:center;margin:18px 0 4px">No videos yet. Tap + to post your first video.</p>
     </section>
@@ -485,14 +502,23 @@ async function loadProfile() {
   $("pnm").textContent = me.displayName || "User";
   try {
     const s = await getDocs(query(collection(db, "posts"), where("uid", "==", me.uid), limit(200)));
-    myVids = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(p => cvOk(p.cv) || /^[A-Za-z0-9_-]{11}$/.test(p.vid || ""))
+    const all = s.docs.map(d => ({ id: d.id, ...d.data() })), ym = utc().ym;
+    const tot = p => Object.keys(p).reduce((n, k) => n + (/^v\d{6}$/.test(k) ? Number(p[k]) || 0 : 0), 0);
+    const th = p => cvOk(p.cv) ? `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/so_50p,f_jpg,w_540/${p.cv}.jpg` : "https://i.ytimg.com/vi/" + p.vid + "/hqdefault.jpg";
+    myVids = all.filter(p => cvOk(p.cv) || /^[A-Za-z0-9_-]{11}$/.test(p.vid || ""))
       .sort((a, b) => (b.createdAt ? b.createdAt.seconds : 9e9) - (a.createdAt ? a.createdAt.seconds : 9e9));
     $("pPosts").textContent = myVids.length;
-    $("myGrid").innerHTML = myVids.map(p => `<button class="vt" data-vt="${p.id}" aria-label="Play video" style="background-image:url(${cvOk(p.cv) ? cvPoster(p.cv) : "https://i.ytimg.com/vi/" + p.vid + "/hqdefault.jpg"})"></button>`).join("");
+    $("pDash").textContent = all.reduce((n, p) => n + (Number(p["v" + ym]) || 0), 0) + " views this month";
+    $("myGrid").innerHTML = myVids.map(p => `<button class="vt" data-vt="${p.id}" aria-label="Play video"><img src="${th(p)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${cvOk(p.cv) ? cvPoster(p.cv) : th(p)}'"><i>&#128065; ${tot(p)}</i></button>`).join("");
     $("myGridEmpty").hidden = myVids.length > 0;
   } catch (e) {}
   try { const c = await getCountFromServer(query(collection(db, "follows"), where("c", "==", me.uid))); $("pFollowers").textContent = c.data().count; } catch (e) {}
+  try { const c = await getCountFromServer(query(collection(db, "follows"), where("f", "==", me.uid))); $("pFollowing").textContent = c.data().count; } catch (e) {}
 }
+$("pShare").onclick = () => $("inviteBtn").click();
+$("pSet").onclick = () => show("settings");
+$("pTabSaved").onclick = () => $("openSaved").click();
+$("pTabRep").onclick = () => $("openReposts").click();
 ["home", "watch", "add", "search", "me"].forEach(k => $("n-" + k).onclick = () => show(k));
 let qTimer = null;
 $("q").oninput = () => { sel = null; clearTimeout(qTimer); qTimer = setTimeout(render, 220); };
