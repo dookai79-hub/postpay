@@ -659,12 +659,26 @@ $("moreBtn").onclick = () => { postLimit += 12; subscribePosts(); };
 
 // View ginti: doosre ke post par, din me 1 baar, tab jab post screen par dikhe
 let watchKey = null;
+let wSound = false;
+try { wSound = localStorage.getItem("wsound") === "1"; } catch (e) {}
+function applySound(t) {
+  const v = t.firstChild, r = t.closest(".reel"), mb = r && r.querySelector("[data-wmute]");
+  if (!v || v.tagName !== "VIDEO") return;
+  const setIcon = () => { if (mb) mb.innerHTML = v.muted ? "&#128263;" : "&#128266;"; };
+  if (wSound) {
+    v.muted = false;
+    const pr = v.play();
+    if (pr && pr.catch) pr.catch(() => { v.muted = true; v.play().catch(() => {}); setIcon(); });
+  }
+  setIcon();
+}
 const wio = new IntersectionObserver(es => es.forEach(e => {
   const t = e.target, cv = t.dataset.cv, id = t.dataset.vid;
   if (cv) {
     if (e.isIntersecting) {
       if (!t.firstChild) {
         t.innerHTML = `<video src="${cvUrl(cv)}" poster="${cvPoster(cv)}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:contain;background:#000"></video>`;
+        applySound(t);
       } else t.firstChild.play();
     } else if (t.firstChild) { t.firstChild.pause(); t.innerHTML = ""; }
     return;
@@ -856,7 +870,7 @@ $("watchBack").onclick = () => show("home");
 $("watchBtn").onclick = () => show("watch");
 $("watchList").onclick = e => {
   const mb = e.target.closest("[data-wmute]");
-  if (mb) { const v = mb.closest(".reel").querySelector("video"); if (v) { v.muted = !v.muted; mb.innerHTML = v.muted ? "&#128263;" : "&#128266;"; } return; }
+  if (mb) { const v = mb.closest(".reel").querySelector("video"); if (v) { v.muted = !v.muted; wSound = !v.muted; try { localStorage.setItem("wsound", wSound ? "1" : "0"); } catch (x) {} mb.innerHTML = v.muted ? "&#128263;" : "&#128266;"; } return; }
   const b = e.target.closest("[data-wnext],[data-wprev]");
   if (!b) return;
   const L = $("watchList");
