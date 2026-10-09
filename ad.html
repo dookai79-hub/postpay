@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Ad</title>
+<style>html,body{margin:0;background:transparent}</style>
+</head>
+<body>
+<script>
+window.addEventListener("error", function (e) { parent.postMessage({ ad: "error", msg: String(e.message || "") }, "*"); }, true);
+var n = 0, t = setInterval(function () {
+  var c = document.getElementById("container-2cb84c7d0c1a2d32addf2d392ba070cd");
+  n++;
+  if (c && c.children.length) { clearInterval(t); parent.postMessage({ ad: "filled" }, "*"); }
+  else if (n >= 10) { clearInterval(t); parent.postMessage({ ad: "empty" }, "*"); }
+}, 2000);
+</script>
+<script async="async" data-cfasync="false" src="https://bicea.org/21/2cb84c7d0c1a2d32addf2d392ba070cd" onerror="parent.postMessage({ad:'blocked'},'*')"></script>
+<div id="container-2cb84c7d0c1a2d32addf2d392ba070cd"></div>
+</body>
+</html>
