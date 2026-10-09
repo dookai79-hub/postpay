@@ -191,6 +191,16 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 .cpill input[type=text]:focus{border:0}
 .cpill input[type=text]::placeholder{color:#8b8fa3}
 #csend{width:40px;height:40px;min-height:40px;padding:0;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,#7c3aed,#c026d3);box-shadow:none}
+/* Profile header */
+.phead{display:flex;align-items:center;gap:22px}
+.pav{width:84px;height:84px;font-size:32px}
+.pstats{flex:1;display:flex;justify-content:space-around;text-align:center}
+.pstats b{display:block;font-size:24px;line-height:1.2}
+.pstats span{display:block;font-size:14px;color:var(--mute)}
+.pnm{display:block;margin-top:12px;font-size:19px}
+.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:18px}
+.vt{position:relative;width:100%;aspect-ratio:3/4;min-height:0;padding:0;border-radius:12px;background:#000 center/cover no-repeat;box-shadow:none;overflow:hidden}
+.vt::after{content:"\25B6";position:absolute;left:8px;bottom:6px;font-size:13px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7)}
 </style>
 </head>
 <body>
@@ -259,6 +269,18 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
       <b>Sign in to see your profile</b>
       <p class="small">Your earnings, UPI ID and payment requests live here.</p>
       <button class="pri signin">Sign in with Google</button>
+    </section>
+    <section class="card" id="profHead" hidden>
+      <div class="phead">
+        <div class="av pav" id="pav">U</div>
+        <div class="pstats">
+          <div><b id="pPosts">0</b><span>Videos</span></div>
+          <div><b id="pFollowers">0</b><span>Followers</span></div>
+        </div>
+      </div>
+      <b class="pnm" id="pnm">User</b>
+      <div class="vgrid" id="myGrid"></div>
+      <p class="small" id="myGridEmpty" hidden style="text-align:center;margin:18px 0 4px">No videos yet. Tap + to post your first video.</p>
     </section>
     <section class="card" id="mine" hidden>
       <b>My earnings</b> <span class="small" id="who"></span>
@@ -368,7 +390,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, deleteDoc, updateDoc, setDoc, getDoc, getDocs, doc, arrayUnion, increment, writeBatch, query, where, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, getCountFromServer, collection, addDoc, deleteDoc, updateDoc, setDoc, getDoc, getDocs, doc, arrayUnion, increment, writeBatch, query, where, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ===== STEP 2: apna Firebase config yahan paste karo =====
 const firebaseConfig = {
@@ -447,6 +469,29 @@ function show(t) {
   if (t === "search" && !skipFocus) $("q").focus();
   skipFocus = false;
   if (t === "home") loadDash();
+  if (t === "me") loadProfile();
+}
+let myVids = [];
+$("myGrid").onclick = e => {
+  const b = e.target.closest("[data-vt]");
+  if (!b) return;
+  const pid = b.dataset.vt;
+  watchKey = "override"; buildWatch(myVids); show("watch");
+  setTimeout(() => { const el = document.querySelector('#watchList .reel[data-pid="' + pid + '"]'); if (el) $("watchList").scrollTo({ top: el.offsetTop, behavior: "instant" }); }, 80);
+};
+async function loadProfile() {
+  if (!me) return;
+  $("pav").innerHTML = avInner(me.displayName || "U", me.photoURL);
+  $("pnm").textContent = me.displayName || "User";
+  try {
+    const s = await getDocs(query(collection(db, "posts"), where("uid", "==", me.uid), limit(200)));
+    myVids = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(p => cvOk(p.cv) || /^[A-Za-z0-9_-]{11}$/.test(p.vid || ""))
+      .sort((a, b) => (b.createdAt ? b.createdAt.seconds : 9e9) - (a.createdAt ? a.createdAt.seconds : 9e9));
+    $("pPosts").textContent = myVids.length;
+    $("myGrid").innerHTML = myVids.map(p => `<button class="vt" data-vt="${p.id}" aria-label="Play video" style="background-image:url(${cvOk(p.cv) ? cvPoster(p.cv) : "https://i.ytimg.com/vi/" + p.vid + "/hqdefault.jpg"})"></button>`).join("");
+    $("myGridEmpty").hidden = myVids.length > 0;
+  } catch (e) {}
+  try { const c = await getCountFromServer(query(collection(db, "follows"), where("c", "==", me.uid))); $("pFollowers").textContent = c.data().count; } catch (e) {}
 }
 ["home", "watch", "add", "search", "me"].forEach(k => $("n-" + k).onclick = () => show(k));
 let qTimer = null;
@@ -458,7 +503,7 @@ document.querySelectorAll("#chips button").forEach(b => b.onclick = () => {
 });
 onAuthStateChanged(auth, async u => {
   me = u; agreed = false; setUpi("");
-  $("newpost").hidden = $("mine").hidden = !u;
+  $("newpost").hidden = $("mine").hidden = $("profHead").hidden = !u; if (u) loadProfile();
   $("needAdd").hidden = $("needMe").hidden = !!u;
   $("who").textContent = u ? "(" + (u.displayName || "") + ")" : "";
   setNavAvatar(u);
