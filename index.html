@@ -149,6 +149,22 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 #nav button.on .navav{border-color:#7c3aed}
 .gear{width:40px;height:40px;min-height:40px;padding:0;border-radius:50%;background:var(--card);border:1px solid var(--line);color:var(--ink);box-shadow:none;display:flex;align-items:center;justify-content:center}
 .gear[hidden]{display:none}
+.rbtns{bottom:120px;gap:20px}
+.rbtns button{width:42px;height:42px;min-height:42px}
+.rbtns .sb{position:relative;display:flex;align-items:center;justify-content:center}
+.rbtns .sb i{font-style:normal;font-size:19px;line-height:1}
+.rbtns .sb small{position:absolute;bottom:-15px;left:-8px;right:-8px;text-align:center;font-size:11px;color:#fff;line-height:1}
+.rbtns .sb.on{color:#ff2d55;border-color:#ff2d55}
+.rbtns [data-act="save"].on,.rbtns [data-act="repost"].on{color:#4ade80;border-color:#4ade80}
+.rbtns .sb.on i{animation:pop .3s}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
+.fbtn{pointer-events:auto;margin-left:10px;padding:4px 14px;min-height:30px;font-size:13px;border-radius:999px;background:transparent;color:#fff;border:1px solid #fff;box-shadow:none}
+.fbtn.on{background:rgba(255,255,255,.22)}
+.fbtn[hidden]{display:none}
+.heartpop{position:absolute;z-index:6;font-size:96px;line-height:1;color:#ff2d55;pointer-events:none;transform:translate(-50%,-50%) scale(0);animation:hp .85s ease-out forwards;text-shadow:0 4px 22px rgba(0,0,0,.45)}
+@keyframes hp{0%{transform:translate(-50%,-50%) scale(0);opacity:1}25%{transform:translate(-50%,-50%) scale(1.25)}60%{transform:translate(-50%,-65%) scale(1);opacity:1}100%{transform:translate(-50%,-110%) scale(1);opacity:0}}
+.cm{display:flex;gap:10px;margin:0 0 12px;color:var(--ink)}
+.cm b{font-size:14px}.cm a{color:var(--mute)}
 </style>
 </head>
 <body>
@@ -181,6 +197,17 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
       <div class="stats"><div><span>Rank</span><b id="sRank">-</b></div><div><span>Views</span><b id="sViews">0</b></div><div><span>Posts</span><b id="sPosts">0</b></div></div>
     </div>
     <div class="adwrap"><div class="adlabel">Sponsored</div><div class="adslot"></div></div>
+    <details class="card" id="videoGuide">
+      <summary>How video buttons work</summary>
+      <ul class="small">
+        <li><b>Follow</b> &ndash; To connect with the creator and become their follower (visible to everyone).</li>
+        <li><b>Like</b> &ndash; To like the video. You can also double-tap the video to like it, with a heart animation just like Instagram.</li>
+        <li><b>Comment</b> &ndash; To write your opinion or thoughts.</li>
+        <li><b>Repost</b> &ndash; To share the video again on your profile.</li>
+        <li><b>Share</b> &ndash; To send the video directly to friends in messages.</li>
+        <li><b>Save</b> &ndash; To keep the video safe to watch later.</li>
+      </ul>
+    </details>
     <h3 class="sec">Latest posts</h3>
     <div id="feed"><p class="small">Loading posts...</p></div>
     <div class="row" style="justify-content:center;margin:0 0 18px"><button class="ghost" id="moreBtn" hidden>Load more</button></div>
@@ -222,6 +249,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
       <b>My earnings</b> <span class="small" id="who"></span>
       <div id="mineBox" class="small">This month's earnings have not been published yet.</div>
       <p class="small" id="reqMsg"></p>
+      <div class="row"><button class="ghost" id="openSaved">Saved</button><button class="ghost" id="openReposts">Reposts</button></div>
       
     
     </section>
@@ -268,7 +296,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
   <button id="n-search" aria-label="Search" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
   <button id="n-me" aria-label="Profile" title="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></button>
 </nav>
-<footer>PostPay &copy; 2026 &middot; <a href="#" id="polLink" style="color:inherit">Rules &amp; Privacy Policy</a> &middot; b16</footer>
+<footer>PostPay &copy; 2026 &middot; <a href="#" id="polLink" style="color:inherit">Rules &amp; Privacy Policy</a> &middot; b17</footer>
 
 <div id="policy" class="modal" hidden>
   <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="polT">
@@ -310,6 +338,15 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
       <div id="polMsg" class="small" style="color:var(--bad)"></div>
     </div>
     <button class="ghost" id="closePol" hidden>Close</button>
+  </div>
+</div>
+
+<div id="cmt" class="modal" hidden>
+  <div class="mbox" role="dialog" aria-modal="true" aria-label="Comments">
+    <h3>Comments</h3>
+    <div id="clist" class="mtxt small"></div>
+    <div class="row" style="margin-top:0"><input type="text" id="cin" maxlength="200" placeholder="Add a comment..." style="flex:1"><button class="pri" id="csend">Send</button></div>
+    <button class="ghost" id="cclose" style="margin-top:10px">Close</button>
   </div>
 </div>
 
@@ -390,6 +427,7 @@ function show(t) {
   if (t === "settings" && curView !== "settings") backView = curView;
   curView = t;
   document.body.style.overflow = t === "watch" ? "hidden" : "";
+  if (t !== "watch" && watchKey === "override") { watchKey = null; lastKey = ""; setTimeout(render, 0); }
   window.scrollTo(0, 0);
   if (t === "search" && !skipFocus) $("q").focus();
   skipFocus = false;
@@ -411,6 +449,7 @@ onAuthStateChanged(auth, async u => {
   setNavAvatar(u);
   $("gear").hidden = !u;
   authReady = true; fillAds();
+  if (!u) { myLikes.clear(); mySaves.clear(); myReposts.clear(); myFollows.clear(); refreshSocialUI(); }
   $("quick").hidden = !u; $("qav").innerHTML = avInner(u ? (u.displayName || "U") : "U", u ? u.photoURL : ""); $("pname").textContent = u ? (u.displayName || "User") : "User";
   $("login").hidden = !!u;
   $("admin").hidden = !(u && u.uid === ADMIN_UID);
@@ -418,6 +457,7 @@ onAuthStateChanged(auth, async u => {
     try { banned = (await getDoc(doc(db, "banned", u.uid))).exists(); } catch (e) {}
     await checkConsent(u);
     loadDash();
+    loadSocial();
     $("ym").value = utc().ym;
     try { const s = await getDoc(doc(db, "users", u.uid)); if (s.exists()) setUpi(s.data().upi || ""); } catch (e) {}
     showMine();
@@ -609,6 +649,7 @@ function subscribePosts() {
   if (unsubPosts) unsubPosts();
   unsubPosts = onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(postLimit)), s => {
     posts = s.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateCounts();
     $("moreBtn").hidden = posts.length < postLimit;
     render();
   }, () => { $("feed").innerHTML = '<p class="small">Could not load posts. Please check the Firebase config.</p>'; });
@@ -624,7 +665,6 @@ const wio = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting) {
       if (!t.firstChild) {
         t.innerHTML = `<video src="${cvUrl(cv)}" poster="${cvPoster(cv)}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:contain;background:#000"></video>`;
-        const v = t.firstChild; v.onclick = () => (v.paused ? v.play() : v.pause());
       } else t.firstChild.play();
     } else if (t.firstChild) { t.firstChild.pause(); t.innerHTML = ""; }
     return;
@@ -675,24 +715,7 @@ function render() {
   $("feed").innerHTML = vis.map((p, i) => card(p, i, true)).join("");
   const vids = vis.filter(p => cvOk(p.cv) || /^[A-Za-z0-9_-]{11}$/.test(p.vid || ""));
   const wk = vids.map(p => p.id + ":" + (p.reporters || []).length).join("|") + (me ? me.uid : "");
-  if (wk !== watchKey) {
-    watchKey = wk;
-    $("watchEmpty").hidden = vids.length > 0;
-    $("watchList").innerHTML = vids.map(p => {
-      const mine = me && me.uid === p.uid, did = me && (p.reporters || []).includes(me.uid);
-      return `<article class="reel" data-pid="${p.id}"><div class="wv" ${cvOk(p.cv) ? `data-cv="${p.cv}"` : `data-vid="${p.vid}"`} style="background:#000 url(${cvOk(p.cv) ? cvPoster(p.cv) : "https://i.ytimg.com/vi/" + p.vid + "/hqdefault.jpg"}) center/cover no-repeat"></div><div class="edge l"></div><div class="edge r"></div><div class="edge t"></div>
-        <div class="rbtns">${cvOk(p.cv) ? `<button data-wmute aria-label="Sound">&#128263;</button>` : ""}<button data-wprev aria-label="Previous video">&#9650;</button><button data-wnext aria-label="Next video">&#9660;</button></div>
-        <div class="rinfo"><div class="head"><div class="av">${avInner(p.name, p.photo)}</div><b>${esc(p.name)}</b></div>
-          ${p.text ? `<p>${esc(p.text)}</p>` : ""}
-          <div class="act">
-            ${p.vid ? `<a class="ylink" href="https://youtu.be/${p.vid}" target="_blank" rel="noopener noreferrer">Open on YouTube</a>` : ""}
-            ${mine || (me && me.uid === ADMIN_UID) ? `<button class="del" data-del="${p.id}">Delete</button>` : ""}
-            ${me && !mine && !did ? `<button data-rep="${p.id}">Report</button>` : ""}
-            ${did ? `<span class="meta">Reported</span>` : ""}
-          </div></div></article>`;
-    }).join("");
-    document.querySelectorAll(".wv").forEach(x => wio.observe(x));
-  }
+  if (wk !== watchKey && watchKey !== "override") { watchKey = wk; buildWatch(vids); }
   const ql = ($("q").value || "").trim().toLowerCase();
   let type = chip === "videos" ? "video" : chip === "photos" ? "photo" : "";
   const terms = [];
@@ -877,6 +900,160 @@ window.addEventListener("message", ev => {
   if ((d.ad === "empty" || d.ad === "blocked") && !isAdmin) wrap.style.display = "none";
   if (isAdmin) lab.textContent = "Sponsored - status: " + d.ad + (d.msg ? " (" + String(d.msg).slice(0, 60) + ")" : "");
 });
+
+// ===== Social: follow, like, comment, repost, share, save =====
+const myLikes = new Set(), mySaves = new Set(), myReposts = new Set(), myFollows = new Set();
+const needLogin = () => {
+  if (!me) { toast("Please sign in first"); return true; }
+  if (!agreed) { openPolicy(true); return true; }
+  return false;
+};
+async function loadSocial() {
+  if (!me) return;
+  try {
+    const q = c => getDocs(query(collection(db, c), where("uid", "==", me.uid), limit(400)));
+    const [a, b, c, f] = await Promise.all([q("likes"), q("saves"), q("reposts"), getDocs(query(collection(db, "follows"), where("f", "==", me.uid), limit(400)))]);
+    myLikes.clear(); mySaves.clear(); myReposts.clear(); myFollows.clear();
+    a.forEach(d => myLikes.add(d.data().postId)); b.forEach(d => mySaves.add(d.data().postId)); c.forEach(d => myReposts.add(d.data().postId));
+    f.forEach(d => myFollows.add(d.data().c));
+  } catch (e) { console.error(e); }
+  refreshSocialUI();
+}
+function refreshSocialUI() {
+  document.querySelectorAll(".reel").forEach(r => {
+    const pid = r.dataset.pid, cu = r.dataset.cuid;
+    const on = (a, s, k) => { const b = r.querySelector('[data-act="' + a + '"]'); if (b) b.classList.toggle("on", s.has(k)); };
+    on("like", myLikes, pid); on("save", mySaves, pid); on("repost", myReposts, pid);
+    const f = r.querySelector('[data-act="follow"]');
+    if (f) { f.hidden = !!(me && me.uid === cu); f.classList.toggle("on", myFollows.has(cu)); f.textContent = myFollows.has(cu) ? "Following" : "Follow"; }
+  });
+}
+function bumpCount(pid, d) {
+  const p = posts.find(x => x.id === pid);
+  if (p) p.lc = Math.max(0, (p.lc || 0) + d);
+  document.querySelectorAll('.reel[data-pid="' + pid + '"] .lcnt').forEach(el => { el.textContent = Math.max(0, (Number(el.textContent) || 0) + d); });
+}
+function updateCounts() {
+  posts.forEach(p => document.querySelectorAll('.reel[data-pid="' + p.id + '"] .lcnt').forEach(el => { el.textContent = p.lc || 0; }));
+}
+async function toggleLike(pid, force) {
+  if (needLogin()) return;
+  const has = myLikes.has(pid);
+  if (force === true && has) return;
+  const bt = writeBatch(db), lk = doc(db, "likes", pid + "_" + me.uid), pr = doc(db, "posts", pid);
+  if (has) { bt.delete(lk); bt.update(pr, { lc: increment(-1) }); myLikes.delete(pid); bumpCount(pid, -1); }
+  else { bt.set(lk, { uid: me.uid, postId: pid, t: serverTimestamp() }); bt.update(pr, { lc: increment(1) }); myLikes.add(pid); bumpCount(pid, 1); }
+  refreshSocialUI();
+  try { await bt.commit(); }
+  catch (e) { console.error(e); if (has) { myLikes.add(pid); bumpCount(pid, 1); } else { myLikes.delete(pid); bumpCount(pid, -1); } refreshSocialUI(); toast("Could not update like"); }
+}
+async function toggleSimple(coll, set, pid, onMsg, offMsg) {
+  if (needLogin()) return;
+  const ref = doc(db, coll, pid + "_" + me.uid), has = set.has(pid);
+  if (has) set.delete(pid); else set.add(pid);
+  refreshSocialUI();
+  try { if (has) await deleteDoc(ref); else await setDoc(ref, { uid: me.uid, postId: pid, t: serverTimestamp() }); toast(has ? offMsg : onMsg); }
+  catch (e) { console.error(e); if (has) set.add(pid); else set.delete(pid); refreshSocialUI(); toast("Could not update"); }
+}
+async function toggleFollow(cu) {
+  if (needLogin() || cu === me.uid) return;
+  const ref = doc(db, "follows", me.uid + "_" + cu), has = myFollows.has(cu);
+  if (has) myFollows.delete(cu); else myFollows.add(cu);
+  refreshSocialUI();
+  try { if (has) await deleteDoc(ref); else await setDoc(ref, { f: me.uid, c: cu, t: serverTimestamp() }); }
+  catch (e) { console.error(e); if (has) myFollows.add(cu); else myFollows.delete(cu); refreshSocialUI(); toast("Could not update follow"); }
+}
+async function sharePost(pid) {
+  const p = posts.find(x => x.id === pid), url = location.origin + location.pathname;
+  try {
+    if (navigator.share) await navigator.share({ title: "PostPay", text: p && p.text ? p.text.slice(0, 100) : "Watch this on PostPay", url });
+    else { await navigator.clipboard.writeText(url); toast("Link copied"); }
+  } catch (e) {}
+}
+let curCmt = null, cmtT = 0;
+async function openComments(pid) {
+  curCmt = pid; $("cmt").hidden = false; $("clist").textContent = "Loading...";
+  try {
+    const s = await getDocs(query(collection(db, "comments"), where("postId", "==", pid), limit(60)));
+    const rows = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.t ? a.t.seconds : 9e9) - (b.t ? b.t.seconds : 9e9));
+    $("clist").innerHTML = rows.length ? rows.map(c => `<div class="cm"><div class="av" style="width:32px;height:32px;font-size:14px">${avInner(c.name, c.photo)}</div><div><b>${esc(c.name)}</b><div>${esc(c.text)}</div>${me && (me.uid === c.uid || me.uid === ADMIN_UID) ? `<a href="#" data-cdel="${c.id}">Delete</a>` : ""}</div></div>`).join("") : "No comments yet. Be the first.";
+    document.querySelectorAll("[data-cdel]").forEach(a => a.onclick = async e => { e.preventDefault(); try { await deleteDoc(doc(db, "comments", a.dataset.cdel)); } catch (x) {} openComments(pid); });
+  } catch (e) { $("clist").textContent = "Could not load comments."; }
+}
+$("cclose").onclick = () => { $("cmt").hidden = true; };
+$("csend").onclick = async () => {
+  const text = $("cin").value.trim();
+  if (needLogin() || !text) return;
+  if (BAD.test(text) || LINK.test(text)) { toast("This comment is not allowed"); return; }
+  if (Date.now() - cmtT < 10000) { toast("Please wait a few seconds"); return; }
+  try {
+    await addDoc(collection(db, "comments"), { postId: curCmt, uid: me.uid, name: (me.displayName || "User").slice(0, 60), photo: okPhoto(me.photoURL) ? me.photoURL : "", text, t: serverTimestamp() });
+    cmtT = Date.now(); $("cin").value = ""; openComments(curCmt);
+  } catch (e) { console.error(e); toast("Could not post comment"); }
+};
+function buildWatch(vids) {
+  $("watchEmpty").hidden = vids.length > 0;
+  $("watchList").innerHTML = vids.map(p => {
+    const mine = me && me.uid === p.uid, did = me && (p.reporters || []).includes(me.uid);
+    return `<article class="reel" data-pid="${p.id}" data-cuid="${esc(p.uid)}"><div class="wv" ${cvOk(p.cv) ? `data-cv="${p.cv}"` : `data-vid="${p.vid}"`} style="background:#000 url(${cvOk(p.cv) ? cvPoster(p.cv) : "https://i.ytimg.com/vi/" + p.vid + "/hqdefault.jpg"}) center/cover no-repeat"></div><div class="edge l"></div><div class="edge r"></div><div class="edge t"></div>
+        <div class="rbtns">
+          <button class="sb" data-act="like" aria-label="Like"><i>&#9829;</i><small class="lcnt">${p.lc || 0}</small></button>
+          <button class="sb" data-act="comment" aria-label="Comment"><i>&#128172;</i></button>
+          <button class="sb" data-act="repost" aria-label="Repost"><i>&#128257;</i></button>
+          <button class="sb" data-act="share" aria-label="Share"><i>&#10148;</i></button>
+          <button class="sb" data-act="save" aria-label="Save"><i>&#128278;</i></button>
+          ${cvOk(p.cv) ? `<button data-wmute aria-label="Sound">&#128263;</button>` : ""}<button data-wprev aria-label="Previous video">&#9650;</button><button data-wnext aria-label="Next video">&#9660;</button></div>
+        <div class="rinfo"><div class="head"><div class="av">${avInner(p.name, p.photo)}</div><b>${esc(p.name)}</b><button class="fbtn" data-act="follow">Follow</button></div>
+          ${p.text ? `<p>${esc(p.text)}</p>` : ""}
+          <div class="act">
+            ${p.vid ? `<a class="ylink" href="https://youtu.be/${p.vid}" target="_blank" rel="noopener noreferrer">Open on YouTube</a>` : ""}
+            ${mine || (me && me.uid === ADMIN_UID) ? `<button class="del" data-del="${p.id}">Delete</button>` : ""}
+            ${me && !mine && !did ? `<button data-rep="${p.id}">Report</button>` : ""}
+            ${did ? `<span class="meta">Reported</span>` : ""}
+          </div></div></article>`;
+  }).join("");
+  document.querySelectorAll(".wv").forEach(x => wio.observe(x));
+  refreshSocialUI();
+}
+let lastTap = 0, tapTimer = null;
+$("watchList").addEventListener("click", e => {
+  const b = e.target.closest("[data-act]");
+  if (b) {
+    const r = b.closest(".reel"), pid = r.dataset.pid, a = b.dataset.act;
+    if (a === "like") toggleLike(pid);
+    else if (a === "save") toggleSimple("saves", mySaves, pid, "Saved", "Removed from saved");
+    else if (a === "repost") toggleSimple("reposts", myReposts, pid, "Reposted to your profile", "Repost removed");
+    else if (a === "share") sharePost(pid);
+    else if (a === "comment") openComments(pid);
+    else if (a === "follow") toggleFollow(r.dataset.cuid);
+    return;
+  }
+  if (e.target.closest("button, a")) return;
+  const reel = e.target.closest(".reel");
+  if (!reel) return;
+  const now = Date.now();
+  if (now - lastTap < 300) {
+    clearTimeout(tapTimer); lastTap = 0;
+    const rect = reel.getBoundingClientRect(), hp = document.createElement("div");
+    hp.className = "heartpop"; hp.textContent = "\u2665";
+    hp.style.left = (e.clientX - rect.left) + "px"; hp.style.top = (e.clientY - rect.top) + "px";
+    reel.appendChild(hp); setTimeout(() => hp.remove(), 900);
+    toggleLike(reel.dataset.pid, true);
+  } else {
+    lastTap = now;
+    tapTimer = setTimeout(() => { const v = reel.querySelector("video"); if (v) { if (v.paused) v.play(); else v.pause(); } }, 300);
+  }
+});
+async function openList(kind) {
+  if (needLogin()) return;
+  const ids = [...(kind === "saved" ? mySaves : myReposts)].slice(0, 20);
+  if (!ids.length) { toast(kind === "saved" ? "No saved videos yet" : "No reposts yet"); return; }
+  const snaps = await Promise.all(ids.map(id => getDoc(doc(db, "posts", id)).catch(() => null)));
+  const list = snaps.filter(s => s && s.exists()).map(s => ({ id: s.id, ...s.data() })).filter(p => (p.reporters || []).length < 3 && (cvOk(p.cv) || /^[A-Za-z0-9_-]{11}$/.test(p.vid || "")));
+  watchKey = "override"; buildWatch(list); show("watch");
+}
+$("openSaved").onclick = () => openList("saved");
+$("openReposts").onclick = () => openList("reposts");
 </script>
 </body>
 </html>
