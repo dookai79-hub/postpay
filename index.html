@@ -268,7 +268,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
   <button id="n-search" aria-label="Search" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
   <button id="n-me" aria-label="Profile" title="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></button>
 </nav>
-<footer>PostPay &copy; 2026 &middot; <a href="#" id="polLink" style="color:inherit">Rules &amp; Privacy Policy</a> &middot; b15</footer>
+<footer>PostPay &copy; 2026 &middot; <a href="#" id="polLink" style="color:inherit">Rules &amp; Privacy Policy</a> &middot; b16</footer>
 
 <div id="policy" class="modal" hidden>
   <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="polT">
@@ -410,6 +410,7 @@ onAuthStateChanged(auth, async u => {
   $("who").textContent = u ? "(" + (u.displayName || "") + ")" : "";
   setNavAvatar(u);
   $("gear").hidden = !u;
+  authReady = true; fillAds();
   $("quick").hidden = !u; $("qav").innerHTML = avInner(u ? (u.displayName || "U") : "U", u ? u.photoURL : ""); $("pname").textContent = u ? (u.displayName || "User") : "User";
   $("login").hidden = !!u;
   $("admin").hidden = !(u && u.uid === ADMIN_UID);
@@ -847,19 +848,25 @@ function openReel(pid) {
 }
 
 // ===== Ads (Adsterra) =====
+let authReady = false;
 function fillAds() {
+  if (!authReady) return;
+  if (me && me.uid === ADMIN_UID && !/[?&]ads=debug/.test(location.search)) {
+    document.querySelectorAll(".adslot").forEach(s => { s.innerHTML = ""; s.removeAttribute("data-f"); });
+    document.querySelectorAll(".adwrap").forEach(w => { w.style.display = "none"; });
+    return;
+  }
   document.querySelectorAll(".adslot:not([data-f])").forEach(s => {
     s.setAttribute("data-f", "1");
     const f = document.createElement("iframe");
     f.setAttribute("loading", "lazy");
     f.setAttribute("title", "Advertisement");
     f.setAttribute("scrolling", "no");
-    f.setAttribute("sandbox", "allow-scripts allow-popups allow-popups-to-escape-sandbox" + (/[?&]adsame=1/.test(location.search) ? " allow-same-origin" : ""));
-    f.src = "ad.html?v=15";
+    f.setAttribute("sandbox", "allow-scripts allow-popups allow-popups-to-escape-sandbox" + (/[?&]adsame=0/.test(location.search) ? "" : " allow-same-origin"));
+    f.src = "ad.html?v=16";
     s.appendChild(f);
   });
 }
-fillAds();
 window.addEventListener("message", ev => {
   const d = ev.data;
   if (!d || !d.ad) return;
