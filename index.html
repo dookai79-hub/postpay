@@ -122,7 +122,7 @@ footer a{color:var(--mute)}
 .chips button.on{color:#fff;background:var(--g);border-color:transparent}
 .person{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:18px;padding:12px 14px;margin-bottom:12px;background:var(--card);color:var(--ink);border:1px solid var(--line)}
 .person span.t{display:flex;flex-direction:column;line-height:1.3}
-#nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:10;display:flex;gap:4px;padding:7px;width:min(92vw,400px);border-radius:999px;background:rgba(38,42,51,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.55),0 0 16px rgba(77,142,255,.15)}
+#nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:10;display:flex;gap:4px;padding:7px;width:min(92vw,400px);border-radius:999px;background:rgba(38,42,51,.97);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.55),0 0 16px rgba(77,142,255,.15)}
 #nav button{flex:1;height:58px;min-height:58px;padding:0;border-radius:999px;background:transparent;color:#9ca3b5;box-shadow:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
 #nav button[data-l]::after{content:attr(data-l);font-size:10px;font-weight:700;letter-spacing:.3px;line-height:1}
 #nav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
@@ -142,9 +142,9 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 .wv{aspect-ratio:4/5;max-height:72vh;width:100%;border-radius:16px;overflow:hidden;background:#000}
 #v-watch{position:fixed;inset:0;z-index:8;background:#000}
 #v-watch[hidden]{display:none}
-#watchList{height:100vh;height:100dvh;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#watchList{height:100%;overflow-y:scroll;overscroll-behavior-y:contain;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 #watchList::-webkit-scrollbar{display:none}
-.reel{position:relative;height:100vh;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#000}
+.reel{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#000;contain:layout paint}
 .reel .wv{position:absolute;inset:0;aspect-ratio:auto;max-height:none;border-radius:0}
 .edge{position:absolute;top:0;bottom:0;width:18%;z-index:2}.edge.l{left:0}.edge.r{right:0}.edge.t{left:0;right:0;width:auto;height:20%;bottom:auto}
 .ylink{display:inline-flex;align-items:center;padding:8px 18px;min-height:40px;border-radius:999px;background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.25);font-size:14px;font-weight:600;text-decoration:none}
@@ -172,7 +172,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 .gear{width:40px;height:40px;min-height:40px;padding:0;border-radius:50%;background:var(--card);border:1px solid var(--line);color:var(--ink);box-shadow:none;display:flex;align-items:center;justify-content:center}
 .gear[hidden]{display:none}
 .rbtns{bottom:120px;gap:20px}
-.rbtns button{width:42px;height:42px;min-height:42px;background:rgba(38,42,51,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-color:rgba(255,255,255,.12)}
+.rbtns button{width:42px;height:42px;min-height:42px;background:rgba(38,42,51,.72);border-color:rgba(255,255,255,.12)}
 .rbtns .sb{position:relative;display:flex;align-items:center;justify-content:center}
 .rbtns .sb i{font-style:normal;font-size:19px;line-height:1}
 .rbtns .sb small{position:absolute;bottom:-15px;left:-8px;right:-8px;text-align:center;font-size:11px;color:#fff;line-height:1}
@@ -876,15 +876,24 @@ function applySound(t) {
   }
   setIcon();
 }
+const cvHtml = cv => `<video src="${cvUrl(cv)}" poster="${cvPoster(cv)}" muted loop playsinline preload="auto" style="width:100%;height:100%;object-fit:contain;background:#000"></video>`;
+// aas-paas (ek screen upar/neeche) ki videos pehle se load rakho, taaki scroll par turant chalein
+const wloadIO = new IntersectionObserver(es => es.forEach(e => {
+  const t = e.target;
+  if (!t.dataset.cv) return;
+  if (e.isIntersecting) { if (!t.firstChild) t.innerHTML = cvHtml(t.dataset.cv); }
+  else if (t.firstChild) { t.firstChild.pause(); t.innerHTML = ""; }
+}), { rootMargin: "100% 0px 100% 0px", threshold: 0 });
 const wio = new IntersectionObserver(es => es.forEach(e => {
   const t = e.target, cv = t.dataset.cv, id = t.dataset.vid;
   if (cv) {
     if (e.isIntersecting) {
-      if (!t.firstChild) {
-        t.innerHTML = `<video src="${cvUrl(cv)}" poster="${cvPoster(cv)}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:contain;background:#000"></video>`;
-        applySound(t);
-      } else t.firstChild.play();
-    } else if (t.firstChild) { t.firstChild.pause(); t.innerHTML = ""; }
+      if (!t.firstChild) t.innerHTML = cvHtml(cv);
+      const v = t.firstChild;
+      v.muted = true;
+      const pr = v.play(); if (pr && pr.catch) pr.catch(() => {});
+      applySound(t);
+    } else if (t.firstChild) t.firstChild.pause();
     return;
   }
   t.innerHTML = e.isIntersecting ? `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&playsinline=1&rel=0&modestbranding=1" title="Video" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;height:100%;border:0"></iframe>` : "";
@@ -1302,7 +1311,7 @@ function buildWatch(vids) {
             ${did ? `<span class="meta">Reported</span>` : ""}
           </div></div></article>`;
   }).join("");
-  document.querySelectorAll(".wv").forEach(x => wio.observe(x));
+  document.querySelectorAll(".wv").forEach(x => { wio.observe(x); wloadIO.observe(x); });
   refreshSocialUI();
 }
 let lastTap = 0, tapTimer = null;
