@@ -159,6 +159,12 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 .rbtns .sb.on{color:#ff2d55;border-color:#ff2d55}
 .rbtns [data-act="save"].on,.rbtns [data-act="repost"].on{color:#60a5fa;border-color:#60a5fa}
 .rbtns .sb.on i{animation:pop .3s}
+.pbar{display:flex;gap:8px;margin-top:10px}
+.pbar button{display:flex;align-items:center;gap:7px;min-height:40px;padding:0 16px;border-radius:999px;background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none;font-size:14px}
+.pbar button i{display:flex;font-style:normal}
+.pbar button svg{width:20px;height:20px}
+.pbar button.on{color:#ff2d55;border-color:#ff2d55}
+.pbar button.on i{animation:pop .3s}
 @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
 .fbtn{pointer-events:auto;margin-left:10px;padding:4px 14px;min-height:30px;font-size:13px;border-radius:999px;background:transparent;color:#fff;border:1px solid #fff;box-shadow:none}
 .fbtn.on{background:rgba(255,255,255,.22)}
@@ -256,12 +262,9 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
       <div class="stats"><div><span>Rank</span><b id="sRank">-</b></div><div><span>Views</span><b id="sViews">0</b></div><div><span>Posts</span><b id="sPosts">0</b></div></div>
     </div>
     <div class="adwrap"><div class="adlabel">Sponsored</div><div class="adslot"></div></div>
-    <div id="homeFeedHidden" style="display:none" aria-hidden="true">
-    <h3 class="sec">Latest posts</h3>
     <div id="feed"><p class="small">Loading posts...</p></div>
     <div class="row" style="justify-content:center;margin:0 0 18px"><button class="ghost" id="moreBtn" hidden>Load more</button></div>
     <div id="empty" class="empty" hidden><div class="eico"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.14-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0L14.06 8.5A2 2 0 0 0 15.5 9.94l6.14 1.58a.5.5 0 0 1 0 .96L15.5 14.06a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/></svg></div><b>No posts yet</b><p>Be the first to share something and start earning.</p><button class="pri" id="emptyBtn">Create first post</button></div>
-    </div>
   </div>
 
   <div class="view" id="v-add" hidden>
@@ -824,7 +827,8 @@ function render() {
   if (key === lastKey) return;
   lastKey = key;
   const vis = posts.filter(p => (p.reporters || []).length < 3);
-  $("empty").hidden = vis.length > 0;
+  const photoOnly = vis.filter(p => typeof p.img === "string" && p.img.startsWith("data:image/jpeg;base64,") && !p.cv && !p.vid);
+  $("empty").hidden = photoOnly.length > 0;
   const card = (p, i, ad) => {
     const t = p.createdAt ? p.createdAt.toDate().toLocaleDateString("en-IN") : "just now";
     const mine = me && me.uid === p.uid, did = me && (p.reporters || []).includes(me.uid);
@@ -834,6 +838,7 @@ function render() {
       ${p.text ? `<p>${esc(p.text)}</p>` : ""}
       ${img ? `<img src="${img}" alt="Post photo" loading="lazy" decoding="async">` : ""}
       ${cvOk(p.cv) ? `<video src="${cvUrl(p.cv)}" poster="${cvPoster(p.cv)}" controls playsinline preload="metadata" style="width:100%;max-height:70vh;border-radius:12px;margin-top:8px;background:#000"></video>` : /^[A-Za-z0-9_-]{11}$/.test(p.vid || "") ? `<iframe src="https://www.youtube-nocookie.com/embed/${p.vid}?rel=0&playsinline=1" title="Video" loading="lazy" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;margin-top:8px"></iframe>` : (img ? "" : `<div class="meta" style="margin-top:6px"><span>Text-only post (does not earn)</span></div>`)}
+      ${img && !cvOk(p.cv) && !p.vid ? `<div class="pbar"><button data-plike="${p.id}" aria-label="Like"><i>${IC.heart}</i><span class="lcnt">${p.lc || 0}</span></button><button data-pcm="${p.id}" aria-label="Comment"><i>${IC.comment}</i><span>Comment</span></button></div>` : ""}
       <div class="act">
         ${(cvOk(p.cv) || /^[A-Za-z0-9_-]{11}$/.test(p.vid || "")) ? `<button data-reel="${p.id}">${IC.expand} Full screen</button>` : ""}
         ${mine || (me && me.uid === ADMIN_UID) ? `<button class="del" data-del="${p.id}">Delete</button>` : ""}
@@ -841,7 +846,7 @@ function render() {
         ${did ? `<span class="meta">Reported</span>` : ""}
       </div></article>` + (ad && (i + 1) % AD_EVERY === 0 ? `<div class="adwrap"><div class="adlabel">Sponsored</div><div class="adslot"></div></div>` : "");
   };
-  $("feed").innerHTML = vis.map((p, i) => card(p, i, true)).join("");
+  $("feed").innerHTML = photoOnly.map((p, i) => card(p, i, true)).join("");
   const vids = vis.filter(p => cvOk(p.cv) || /^[A-Za-z0-9_-]{11}$/.test(p.vid || ""));
   const wk = vids.map(p => p.id + ":" + (p.reporters || []).length).join("|") + (me ? me.uid : "");
   if (wk !== watchKey && watchKey !== "override") { watchKey = wk; buildWatch(vids); }
@@ -878,6 +883,7 @@ function render() {
   document.querySelectorAll("[data-del]").forEach(b => b.onclick = () => confirm("Delete this post?") && deleteDoc(doc(db, "posts", b.dataset.del)));
   document.querySelectorAll("[data-rep]").forEach(b => b.onclick = () => confirm("Report this post as breaking the rules?") && updateDoc(doc(db, "posts", b.dataset.rep), { reporters: arrayUnion(me.uid) }));
   document.querySelectorAll("article[data-pid]").forEach(a => { const p = posts.find(x => x.id === a.dataset.pid); if (p && (p.vid || p.cv || p.img)) io.observe(a); });
+  refreshSocialUI();
 }
 
 // ===== Admin: mahine ka hisaab =====
@@ -1049,6 +1055,7 @@ async function loadSocial() {
   refreshSocialUI();
 }
 function refreshSocialUI() {
+  document.querySelectorAll("[data-plike]").forEach(b => b.classList.toggle("on", myLikes.has(b.dataset.plike)));
   document.querySelectorAll(".reel").forEach(r => {
     const pid = r.dataset.pid, cu = r.dataset.cuid;
     const on = (a, s, k) => { const b = r.querySelector('[data-act="' + a + '"]'); if (b) b.classList.toggle("on", s.has(k)); };
@@ -1060,10 +1067,10 @@ function refreshSocialUI() {
 function bumpCount(pid, d) {
   const p = posts.find(x => x.id === pid);
   if (p) p.lc = Math.max(0, (p.lc || 0) + d);
-  document.querySelectorAll('.reel[data-pid="' + pid + '"] .lcnt').forEach(el => { el.textContent = Math.max(0, (Number(el.textContent) || 0) + d); });
+  document.querySelectorAll('[data-pid="' + pid + '"] .lcnt').forEach(el => { el.textContent = Math.max(0, (Number(el.textContent) || 0) + d); });
 }
 function updateCounts() {
-  posts.forEach(p => document.querySelectorAll('.reel[data-pid="' + p.id + '"] .lcnt').forEach(el => { el.textContent = p.lc || 0; }));
+  posts.forEach(p => document.querySelectorAll('[data-pid="' + p.id + '"] .lcnt').forEach(el => { el.textContent = p.lc || 0; }));
 }
 async function toggleLike(pid, force) {
   if (needLogin()) return;
@@ -1120,6 +1127,11 @@ async function openComments(pid) {
     document.querySelectorAll("[data-crep]").forEach(a => a.onclick = e => { e.preventDefault(); $("cin").value = "@" + a.dataset.crep + " "; $("cin").focus(); });
   } catch (e) { $("clist").textContent = "Could not load comments."; }
 }
+document.addEventListener("click", e => {
+  const l = e.target.closest("[data-plike]"), c = e.target.closest("[data-pcm]");
+  if (l) toggleLike(l.dataset.plike);
+  else if (c) { if (needLogin()) return; openComments(c.dataset.pcm); }
+});
 $("cclose").onclick = () => { $("cmt").hidden = true; };
 $("cmt").addEventListener("click", e => { if (e.target === $("cmt")) $("cmt").hidden = true; });
 $("cemojis").onclick = e => { const b = e.target.closest("button"); if (!b) return; const i = $("cin"); if (i.value.length + b.textContent.length <= 200) i.value += b.textContent; i.focus(); };
