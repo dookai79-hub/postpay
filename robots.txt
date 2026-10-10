@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dookai79-hub.github.io/postpay/sitemap.xml
