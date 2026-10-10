@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="theme-color" content="#e9e7f1">
+<meta name="monetag" content="3d28931590ba22c6093647c1305de502">
+<meta name="theme-color" content="#07090f">
 <meta property="og:title" content="PostPay - Post, Get Views, Earn">
 <meta property="og:description" content="Share photos and videos and earn from your views.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='26' fill='%2322c55e'/%3E%3Ctext x='50' y='70' font-size='62' font-weight='800' text-anchor='middle' fill='%2303200f' font-family='Arial'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='26' fill='%232563eb'/%3E%3Ctext x='50' y='70' font-size='62' font-weight='800' text-anchor='middle' fill='%23ffffff' font-family='Arial'%3EP%3C/text%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
@@ -16,63 +17,63 @@
 <title>PostPay - Post, Get Views, Earn</title>
 <meta name="description" content="Share photos and videos and earn from your views.">
 <style>
-:root{--bg:#e9e7f1;--card:#f5f4fa;--card2:#e6e4ef;--ink:#1b1a2c;--mute:#666480;--line:#d9d6e6;--acc:#7c3aed;--acc2:#c026d3;--bad:#e11d48;--onacc:#ffffff;--shadow:0 2px 10px rgba(40,30,80,.07)}
+:root{--bg:#07090f;--card:#0e1320;--card2:#151c2e;--ink:#eaf0ff;--mute:#8d9ab8;--line:#1e2840;--acc:#3b82f6;--acc2:#38bdf8;--bad:#fb7185;--onacc:#ffffff;--shadow:0 4px 18px rgba(0,0,0,.45);--g:linear-gradient(135deg,#1d4ed8,#3b82f6);color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 button:focus:not(:focus-visible){outline:none}
-body{margin:0;color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI","Noto Sans Devanagari",sans-serif;background:radial-gradient(800px 420px at 88% -10%,rgba(124,58,237,.13),transparent 60%),radial-gradient(700px 360px at -10% 4%,rgba(192,38,211,.08),transparent 60%),var(--bg)}
-.grad{background:linear-gradient(90deg,#7c3aed,#c026d3);-webkit-background-clip:text;background-clip:text;color:transparent}
-header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(233,231,241,.97);border-bottom:1px solid var(--line)}
+body{margin:0;color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI","Noto Sans Devanagari",sans-serif;background:radial-gradient(800px 420px at 88% -10%,rgba(59,130,246,.18),transparent 60%),radial-gradient(700px 360px at -10% 4%,rgba(14,165,233,.10),transparent 60%),var(--bg)}
+.grad{background:linear-gradient(90deg,#60a5fa,#38bdf8);-webkit-background-clip:text;background-clip:text;color:transparent}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(7,9,15,.93);border-bottom:1px solid var(--line)}
 header h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.4px;display:flex;align-items:center;gap:10px}
-.logo{width:34px;height:34px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800;background:linear-gradient(135deg,#7c3aed,#c026d3)}
+.logo{width:34px;height:34px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800;background:var(--g)}
 main{max-width:640px;margin:0 auto;padding:20px 16px 8px}
 button{font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:999px;padding:12px 22px;min-height:46px;transition:transform .12s,opacity .12s}
 button:active{transform:scale(.97)}button:disabled{opacity:.5}
-.pri{color:#fff;background:linear-gradient(135deg,#7c3aed,#c026d3);box-shadow:0 8px 22px rgba(124,58,237,.28)}
+.pri{color:#fff;background:var(--g);box-shadow:0 8px 22px rgba(59,130,246,.28)}
 .ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
 .big{font-size:18px;padding:15px 30px;min-height:54px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:18px;box-shadow:var(--shadow)}
 textarea,input[type=text],input[type=number]{width:100%;font:inherit;font-size:17px;color:var(--ink);background:var(--card2);padding:14px 16px;border:1px solid var(--line);border-radius:14px;outline:0}
 textarea:focus,input[type=text]:focus,input[type=number]:focus{border-color:var(--acc)}
 textarea{min-height:110px;resize:vertical}
-::placeholder{color:#9ca3b5}
+::placeholder{color:#6b7896}
 input[type=file]{color:var(--mute);font-size:14px;max-width:100%}
 input[type=file]::file-selector-button{margin-right:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 16px;border-radius:999px;cursor:pointer;font-weight:600}
 .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
 .hero{text-align:center;padding:34px 4px 18px}
-.badge{display:inline-block;font-size:13px;font-weight:700;color:#7c3aed;background:rgba(124,58,237,.10);border:1px solid rgba(124,58,237,.25);padding:6px 14px;border-radius:999px;margin-bottom:16px}
+.badge{display:inline-block;font-size:13px;font-weight:700;color:#60a5fa;background:rgba(59,130,246,.10);border:1px solid rgba(59,130,246,.25);padding:6px 14px;border-radius:999px;margin-bottom:16px}
 .hero h2{margin:0 0 14px;font-size:42px;line-height:1.1;font-weight:800;letter-spacing:-1px}
 .hero p{color:var(--mute);margin:0 auto 24px;max-width:440px;font-size:18px}
 .steps{display:grid;gap:12px;margin-top:30px;text-align:left}
 .step{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
-.step .n{flex:none;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;background:linear-gradient(135deg,#7c3aed,#c026d3)}
+.step .n{flex:none;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;background:var(--g)}
 .step b{display:block;font-size:17px}.step p{margin:2px 0 0;font-size:15px;color:var(--mute);max-width:none}
 .sec{margin:8px 2px 12px;font-size:20px;font-weight:800;letter-spacing:-.3px}
 .profile{display:flex;align-items:center;gap:14px;margin-bottom:18px}
 .profile .av{width:56px;height:56px;font-size:22px}
 .pname{flex:1;min-width:0}.pname b{display:block;font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tier{font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px;color:#9a5b13;background:rgba(205,127,50,.12);border:1px solid rgba(205,127,50,.35);white-space:nowrap}
-.tier.t-silver{color:#5b6475;background:rgba(120,130,150,.12);border-color:rgba(120,130,150,.35)}
-.tier.t-gold{color:#a16207;background:rgba(250,204,21,.18);border-color:rgba(234,179,8,.5)}
+.tier{font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px;color:#f4b183;background:rgba(205,127,50,.14);border:1px solid rgba(205,127,50,.35);white-space:nowrap}
+.tier.t-silver{color:#cbd5e1;background:rgba(120,130,150,.12);border-color:rgba(120,130,150,.35)}
+.tier.t-gold{color:#fde047;background:rgba(250,204,21,.18);border-color:rgba(234,179,8,.5)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 .mini{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
-.mini span{display:block;font-size:14px;color:var(--mute)}.mini b{display:block;font-size:26px;margin-top:2px}.green{color:#059669}
-.mint{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;padding:18px;border-radius:20px;background:linear-gradient(135deg,#ede9fe,#fae8ff);color:#3b0764}
+.mini span{display:block;font-size:14px;color:var(--mute)}.mini b{display:block;font-size:26px;margin-top:2px}.green{color:#34d399}
+.mint{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;padding:18px;border-radius:20px;background:linear-gradient(135deg,#0d1b3a,#0b2f55);border:1px solid #1e3a6e;color:#dbeafe}
 .mint b{font-size:18px;display:block}.mint p{margin:2px 0 0;font-size:14px;opacity:.8}
-.mint button{background:linear-gradient(135deg,#7c3aed,#c026d3);color:#fff;box-shadow:none;flex:none}
+.mint button{background:var(--g);color:#fff;box-shadow:none;flex:none}
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
 .tiles button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px;min-height:84px;background:var(--card);border:1px solid var(--line);color:var(--ink);font-size:14px;border-radius:18px;box-shadow:none}
-.tiles i{font-style:normal;width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;background:rgba(124,58,237,.10);color:#7c3aed}
+.tiles i{font-style:normal;width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;background:rgba(59,130,246,.10);color:#60a5fa}
 .lb div.r{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:16px;color:var(--ink)}
-.lb div.r:last-child{border-bottom:0}.lb .rk{color:#7c3aed;font-weight:800;width:28px;display:inline-block}
-.refer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;padding:18px;border-radius:20px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff}
+.lb div.r:last-child{border-bottom:0}.lb .rk{color:#60a5fa;font-weight:800;width:28px;display:inline-block}
+.refer{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;padding:18px;border-radius:20px;background:linear-gradient(135deg,#1d4ed8,#0ea5e9);color:#fff}
 .refer b{font-size:18px;display:block}.refer p{margin:2px 0 0;font-size:14px;opacity:.85}
-.refer button{background:#fff;color:#7c3aed;box-shadow:none;flex:none}
+.refer button{background:#fff;color:#1d4ed8;box-shadow:none;flex:none}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);margin-bottom:22px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 6px;text-align:center}
 .stats span{display:block;font-size:13px;color:var(--mute)}.stats b{display:block;font-size:24px}
 .stats div+div{border-left:1px solid var(--line)}
 .head{display:flex;align-items:center;gap:12px}
-.av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;background:linear-gradient(135deg,#7c3aed,#c026d3);flex:none;overflow:hidden}
+.av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;background:var(--g);flex:none;overflow:hidden}
 .av img{width:100%;height:100%;object-fit:cover;display:block}
 .head b{font-size:17px}
 .meta2{font-size:13px;color:var(--mute)}
@@ -82,10 +83,10 @@ input[type=file]::file-selector-button{margin-right:10px;border:1px solid var(--
 .act{display:flex;gap:10px;margin-top:14px}
 .act button{background:var(--card2);padding:8px 18px;min-height:40px;color:var(--mute);font-size:14px;font-weight:600}
 .act .del{color:var(--bad)}
-.ad{min-height:96px;border:1.5px dashed #c9c6da;background:var(--card);border-radius:18px;margin-bottom:18px;display:flex;align-items:center;justify-content:center;color:#9ca3b5;font-size:12px;letter-spacing:1.4px;text-transform:uppercase}
+.ad{min-height:96px;border:1.5px dashed #2a3552;background:var(--card);border-radius:18px;margin-bottom:18px;display:flex;align-items:center;justify-content:center;color:#9ca3b5;font-size:12px;letter-spacing:1.4px;text-transform:uppercase}
 .empty{text-align:center;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:34px 20px;box-shadow:var(--shadow)}
 .empty[hidden]{display:none}
-.eico{width:64px;height:64px;margin:0 auto 12px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;background:linear-gradient(135deg,#7c3aed,#c026d3)}
+.eico{width:64px;height:64px;margin:0 auto 12px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;background:var(--g)}
 .empty b{font-size:20px;display:block}.empty p{color:var(--mute);margin:6px 0 18px}
 .small{font-size:15px;color:var(--mute)}.small li{margin:6px 0}
 #msg{color:var(--bad);font-size:15px;margin-top:10px;min-height:22px}
@@ -94,18 +95,18 @@ td,th{border-bottom:1px solid var(--line);padding:10px 6px;text-align:left;word-
 .bigamt{font-size:40px;font-weight:800;margin:8px 0}
 footer{text-align:center;color:#9ca3b5;font-size:14px;padding:26px 24px 120px}
 footer a{color:var(--mute)}
-:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+:focus-visible{outline:3px solid #60a5fa;outline-offset:2px}
 .view[hidden]{display:none}
 .chips{display:flex;gap:10px;margin:0 0 16px;overflow-x:auto}
 .chips button{padding:9px 18px;min-height:42px;font-size:15px;font-weight:600;background:var(--card);color:var(--mute);border:1px solid var(--line);white-space:nowrap}
-.chips button.on{color:#fff;background:linear-gradient(135deg,#7c3aed,#c026d3);border-color:transparent}
+.chips button.on{color:#fff;background:var(--g);border-color:transparent}
 .person{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:18px;padding:12px 14px;margin-bottom:12px;background:var(--card);color:var(--ink);border:1px solid var(--line)}
 .person span.t{display:flex;flex-direction:column;line-height:1.3}
-#nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:10;display:flex;gap:4px;padding:7px;width:min(92vw,400px);border-radius:999px;background:rgba(245,244,250,.98);border:1px solid var(--line);box-shadow:0 14px 36px rgba(20,20,31,.16)}
+#nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:10;display:flex;gap:4px;padding:7px;width:min(92vw,400px);border-radius:999px;background:rgba(14,19,32,.96);border:1px solid var(--line);box-shadow:0 14px 36px rgba(20,20,31,.16)}
 #nav button{flex:1;height:54px;min-height:54px;padding:0;border-radius:999px;background:transparent;color:#9ca3b5;box-shadow:none;display:flex;align-items:center;justify-content:center}
 #nav svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-#nav button.on{background:rgba(124,58,237,.10);color:#7c3aed}
-#nav .plus span{width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#7c3aed,#c026d3);box-shadow:0 8px 18px rgba(124,58,237,.38)}
+#nav button.on{background:rgba(59,130,246,.10);color:#60a5fa}
+#nav .plus span{width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--g);box-shadow:0 8px 18px rgba(59,130,246,.38)}
 #nav .plus svg{stroke:#fff;stroke-width:2.4}
 #nav .plus.on{background:transparent}
 .modal{position:fixed;inset:0;z-index:20;background:rgba(20,20,31,.55);display:flex;align-items:center;justify-content:center;padding:14px}
@@ -135,10 +136,10 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 .rbtns button{width:48px;height:48px;min-height:48px;padding:0;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:1px solid rgba(255,255,255,.28);font-size:18px;box-shadow:none}
 .wback{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:12px;z-index:9;background:rgba(0,0,0,.55);color:#fff;border:1px solid rgba(255,255,255,.28);min-height:42px;padding:8px 18px;box-shadow:none}
 #v-watch .empty{margin:130px 16px 0}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:100px;z-index:30;background:var(--card);color:var(--ink);border:1px solid rgba(124,58,237,.3);padding:12px 20px;border-radius:999px;box-shadow:var(--shadow);font-size:15px;font-weight:600}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:100px;z-index:30;background:var(--card);color:var(--ink);border:1px solid rgba(59,130,246,.3);padding:12px 20px;border-radius:999px;box-shadow:var(--shadow);font-size:15px;font-weight:600}
 .setrow{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:transparent;color:var(--ink);border:0;border-bottom:1px solid var(--line);border-radius:0;padding:14px 4px;min-height:60px;font:inherit;font-weight:600;box-shadow:none;text-decoration:none;cursor:pointer}
 .list{padding:6px 16px}.list .setrow:last-child{border-bottom:0}
-.setrow i{font-style:normal;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(124,58,237,.10);color:#7c3aed;font-size:18px;flex:none}
+.setrow i{font-style:normal;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(59,130,246,.10);color:#60a5fa;font-size:18px;flex:none}
 .setrow span{flex:1}.setrow em{font-style:normal;color:var(--mute);font-size:26px}
 #openSet{border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:var(--card2)}
 .post{content-visibility:auto;contain-intrinsic-size:auto 480px}
@@ -146,7 +147,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 .adlabel{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#9ca3b5;margin:0 4px 6px}
 .adslot iframe{display:block;width:100%;height:250px;border:0;border-radius:16px;background:var(--card)}
 .navav{width:34px;height:34px;border-radius:50%;object-fit:cover;display:block;border:2px solid transparent;box-sizing:border-box}
-#nav button.on .navav{border-color:#7c3aed}
+#nav button.on .navav{border-color:#60a5fa}
 .gear{width:40px;height:40px;min-height:40px;padding:0;border-radius:50%;background:var(--card);border:1px solid var(--line);color:var(--ink);box-shadow:none;display:flex;align-items:center;justify-content:center}
 .gear[hidden]{display:none}
 .rbtns{bottom:120px;gap:20px}
@@ -155,7 +156,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 .rbtns .sb i{font-style:normal;font-size:19px;line-height:1}
 .rbtns .sb small{position:absolute;bottom:-15px;left:-8px;right:-8px;text-align:center;font-size:11px;color:#fff;line-height:1}
 .rbtns .sb.on{color:#ff2d55;border-color:#ff2d55}
-.rbtns [data-act="save"].on,.rbtns [data-act="repost"].on{color:#4ade80;border-color:#4ade80}
+.rbtns [data-act="save"].on,.rbtns [data-act="repost"].on{color:#60a5fa;border-color:#60a5fa}
 .rbtns .sb.on i{animation:pop .3s}
 @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
 .fbtn{pointer-events:auto;margin-left:10px;padding:4px 14px;min-height:30px;font-size:13px;border-radius:999px;background:transparent;color:#fff;border:1px solid #fff;box-shadow:none}
@@ -168,7 +169,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 
 /* Comment sheet (Instagram jaisa) */
 .cmodal{align-items:flex-end;padding:0;background:rgba(0,0,0,.28)}
-.csheet{height:64vh;height:64dvh;max-height:none;max-width:600px;padding:0;border:0;border-radius:28px 28px 0 0;background:#171a22;color:#fff;box-shadow:0 -10px 40px rgba(0,0,0,.5)}
+.csheet{height:64vh;height:64dvh;max-height:none;max-width:600px;padding:0;border:0;border-radius:28px 28px 0 0;background:#0e1320;color:#fff;box-shadow:0 -10px 40px rgba(0,0,0,.5)}
 .csheet .grab{width:100%;height:28px;min-height:28px;padding:0;border-radius:0;background:transparent;box-shadow:none;position:relative;flex:none}
 .csheet .grab::after{content:"";position:absolute;left:50%;top:12px;width:40px;height:4px;margin-left:-20px;border-radius:4px;background:#6b6f80}
 .csheet .mtxt{padding:8px 18px 8px;margin:0;color:#e7e8ef;font-size:16px}
@@ -182,15 +183,15 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 .cacts{display:flex;gap:18px;margin-top:6px}
 .csheet .cacts a{font-size:14px;font-weight:600;color:#9aa0b4;text-decoration:none}
 .cempty{text-align:center;color:#8b8fa3;padding:44px 0}
-.cemojis{display:flex;justify-content:space-between;padding:8px 12px;border-top:1px solid #2a2d3a;flex:none}
+.cemojis{display:flex;justify-content:space-between;padding:8px 12px;border-top:1px solid #1e2840;flex:none}
 .cemojis button{background:transparent;padding:0;width:40px;min-height:40px;font-size:26px;line-height:1;box-shadow:none}
 .cbar{display:flex;align-items:center;gap:12px;padding:6px 14px calc(14px + env(safe-area-inset-bottom,0px));flex:none}
 .cbar .av{width:42px;height:42px;font-size:16px}
-.cpill{flex:1;min-width:0;display:flex;align-items:center;border:1px solid #3a3e4f;border-radius:999px;padding:4px 5px 4px 16px}
+.cpill{flex:1;min-width:0;display:flex;align-items:center;border:1px solid #2a3552;border-radius:999px;padding:4px 5px 4px 16px}
 .cpill input[type=text]{flex:1;min-width:0;border:0;background:transparent;color:#fff;padding:8px 0;font-size:16px;border-radius:0}
 .cpill input[type=text]:focus{border:0}
 .cpill input[type=text]::placeholder{color:#8b8fa3}
-#csend{width:40px;height:40px;min-height:40px;padding:0;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,#7c3aed,#c026d3);box-shadow:none}
+#csend{width:40px;height:40px;min-height:40px;padding:0;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;background:var(--g);box-shadow:none}
 /* Profile (Instagram jaisa) */
 .phead{display:flex;align-items:center;gap:18px}
 .pav{width:84px;height:84px;font-size:32px;flex:none}
@@ -210,8 +211,18 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 .vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:4px}
 .vt{position:relative;width:100%;aspect-ratio:3/4;min-height:0;padding:0;border-radius:6px;background:#111;box-shadow:none;overflow:hidden}
 .vt img{width:100%;height:100%;object-fit:cover;display:block}
-.vt::after{content:"\25B6";position:absolute;right:7px;top:6px;font-size:12px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7)}
+.vt::after{content:"";position:absolute;right:7px;top:7px;width:15px;height:15px;background:#fff;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolygon points='6 3 20 12 6 21'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolygon points='6 3 20 12 6 21'/%3E%3C/svg%3E") center/contain no-repeat;filter:drop-shadow(0 1px 3px rgba(0,0,0,.7))}
 .vt i{position:absolute;left:7px;bottom:6px;font-style:normal;font-size:13px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.75)}
+/* Icons */
+.ic{vertical-align:-4px;margin-right:6px;flex:none}
+.rbtns button{display:flex;align-items:center;justify-content:center}
+.rbtns button svg,.ptabs button svg,.setrow i svg{display:block}
+.rbtns .sb i{display:flex}
+.rbtns [data-act="like"].on svg,.rbtns [data-act="save"].on svg{fill:currentColor}
+#nav button.on svg{fill:rgba(96,165,250,.16)}
+.vt i .ic{margin-right:4px;vertical-align:-2px}
+.wback .ic{margin-right:4px}
+.act button .ic{vertical-align:-3px;margin-right:6px}
 </style>
 </head>
 <body>
@@ -224,7 +235,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
       <h2>Post.<br><span class="grad">Get views. Earn.</span></h2>
       <p>Share your photos or videos and get paid for the views they earn.</p>
       <button class="pri big signin">Get started with Google</button>
-    <div><button class="ghost big" id="watchBtn" style="margin-top:12px">&#9654; Watch videos</button></div>
+    <div><button class="ghost big" id="watchBtn" style="margin-top:12px"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg> Watch videos</button></div>
     <div class="steps">
       <div class="step"><span class="n">1</span><div><b>Sign in</b><p>Quick login with your Google account.</p></div></div>
       <div class="step"><span class="n">2</span><div><b>Post photos or videos</b><p>Share your own content with everyone.</p></div></div>
@@ -247,7 +258,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
     <h3 class="sec">Latest posts</h3>
     <div id="feed"><p class="small">Loading posts...</p></div>
     <div class="row" style="justify-content:center;margin:0 0 18px"><button class="ghost" id="moreBtn" hidden>Load more</button></div>
-    <div id="empty" class="empty" hidden><div class="eico">&#10022;</div><b>No posts yet</b><p>Be the first to share something and start earning.</p><button class="pri" id="emptyBtn">Create first post</button></div>
+    <div id="empty" class="empty" hidden><div class="eico"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.14-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0L14.06 8.5A2 2 0 0 0 15.5 9.94l6.14 1.58a.5.5 0 0 1 0 .96L15.5 14.06a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/></svg></div><b>No posts yet</b><p>Be the first to share something and start earning.</p><button class="pri" id="emptyBtn">Create first post</button></div>
   </div>
 
   <div class="view" id="v-add" hidden>
@@ -295,7 +306,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
       </div>
       <div class="pdash"><b>Your dashboard</b><span id="pDash">0 views this month</span></div>
       <div class="row pbtns"><button class="ghost" id="pShare">Share profile</button><button class="ghost" id="pSet">Settings</button></div>
-      <div class="ptabs"><button class="on" aria-label="My videos">&#9638;</button><button id="pTabSaved" aria-label="Saved">&#128278;</button><button id="pTabRep" aria-label="Reposts">&#128257;</button></div>
+      <div class="ptabs"><button class="on" aria-label="My videos"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="14" rx="1.5"/><rect width="7" height="7" x="3" y="14" rx="1.5"/></svg></button><button id="pTabSaved" aria-label="Saved"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg></button><button id="pTabRep" aria-label="Reposts"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></button></div>
       <div class="vgrid" id="myGrid"></div>
       <p class="small" id="myGridEmpty" hidden style="text-align:center;margin:18px 0 4px">No videos yet. Tap + to post your first video.</p>
     </section>
@@ -319,10 +330,10 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
       <p class="small" id="upiMsg"></p>
     </section>
     <div class="card list">
-      <button class="setrow" id="rowRules"><i>&#167;</i><span>Rules &amp; earnings</span><em>&rsaquo;</em></button>
-      <button class="setrow" id="rowPriv"><i>&#9919;</i><span>Privacy policy</span><em>&rsaquo;</em></button>
-      <a class="setrow" id="rowContact" href="#"><i>&#9993;</i><span>Contact us</span><em>&rsaquo;</em></a>
-      <button class="setrow" id="rowInvite"><i>&#10150;</i><span>Invite friends</span><em>&rsaquo;</em></button>
+      <button class="setrow" id="rowRules"><i><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></i><span>Rules &amp; earnings</span><em>&rsaquo;</em></button>
+      <button class="setrow" id="rowPriv"><i><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></i><span>Privacy policy</span><em>&rsaquo;</em></button>
+      <a class="setrow" id="rowContact" href="#"><i><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></i><span>Contact us</span><em>&rsaquo;</em></a>
+      <button class="setrow" id="rowInvite"><i><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></i><span>Invite friends</span><em>&rsaquo;</em></button>
     </div>
     <section class="card" id="admin" hidden>
       <b>Admin: monthly earnings</b>
@@ -337,9 +348,9 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
     <div class="card"><button class="ghost" id="out" style="width:100%">Logout</button></div>
   </div>
   <div class="view" id="v-watch" hidden>
-    <button class="wback" id="watchBack">&#8592; Back</button>
+    <button class="wback" id="watchBack"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg> Back</button>
     <div id="watchList"></div>
-    <div id="watchEmpty" class="empty" hidden><div class="eico">&#9654;</div><b>No videos yet</b><p>Videos posted by creators will show up here.</p></div>
+    <div id="watchEmpty" class="empty" hidden><div class="eico"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg></div><b>No videos yet</b><p>Videos posted by creators will show up here.</p></div>
   </div>
 </main>
 
@@ -440,6 +451,21 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app), db = getFirestore(app);
 const $ = id => document.getElementById(id);
 const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const svg = (d, s = 22, f = "none") => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="${f}" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const IC = {
+  heart: svg('<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>'),
+  comment: svg('<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>'),
+  repost: svg('<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>'),
+  share: svg('<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>'),
+  save: svg('<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>'),
+  volOff: svg('<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/>'),
+  volOn: svg('<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>'),
+  up: svg('<path d="m18 15-6-6-6 6"/>'),
+  down: svg('<path d="m6 9 6 6 6-6"/>'),
+  eye: svg('<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>', 14).replace('<svg ', '<svg class="ic" '),
+  expand: svg('<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>', 16).replace('<svg ', '<svg class="ic" '),
+  heartBig: svg('<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>', 96, 'currentColor')
+};
 const okPhoto = u => typeof u === "string" && u.length <= 300 && /^https:\/\/[a-z0-9-]+\.googleusercontent\.com\//.test(u);
 const avInner = (name, photo) => okPhoto(photo) ? `<img src="${esc(photo)}" alt="" referrerpolicy="no-referrer">` : esc((name || "U").trim().charAt(0).toUpperCase());
 const NAV_ME_SVG = $("n-me").innerHTML;
@@ -509,7 +535,7 @@ async function loadProfile() {
       .sort((a, b) => (b.createdAt ? b.createdAt.seconds : 9e9) - (a.createdAt ? a.createdAt.seconds : 9e9));
     $("pPosts").textContent = myVids.length;
     $("pDash").textContent = all.reduce((n, p) => n + (Number(p["v" + ym]) || 0), 0) + " views this month";
-    $("myGrid").innerHTML = myVids.map(p => `<button class="vt" data-vt="${p.id}" aria-label="Play video"><img src="${th(p)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${cvOk(p.cv) ? cvPoster(p.cv) : th(p)}'"><i>&#128065; ${tot(p)}</i></button>`).join("");
+    $("myGrid").innerHTML = myVids.map(p => `<button class="vt" data-vt="${p.id}" aria-label="Play video"><img src="${th(p)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${cvOk(p.cv) ? cvPoster(p.cv) : th(p)}'"><i>${IC.eye} ${tot(p)}</i></button>`).join("");
     $("myGridEmpty").hidden = myVids.length > 0;
   } catch (e) {}
   try { const c = await getCountFromServer(query(collection(db, "follows"), where("c", "==", me.uid))); $("pFollowers").textContent = c.data().count; } catch (e) {}
@@ -750,7 +776,7 @@ try { wSound = localStorage.getItem("wsound") === "1"; } catch (e) {}
 function applySound(t) {
   const v = t.firstChild, r = t.closest(".reel"), mb = r && r.querySelector("[data-wmute]");
   if (!v || v.tagName !== "VIDEO") return;
-  const setIcon = () => { if (mb) mb.innerHTML = v.muted ? "&#128263;" : "&#128266;"; };
+  const setIcon = () => { if (mb) mb.innerHTML = v.muted ? IC.volOff : IC.volOn; };
   if (wSound) {
     v.muted = false;
     const pr = v.play();
@@ -806,7 +832,7 @@ function render() {
       ${img ? `<img src="${img}" alt="Post photo" loading="lazy" decoding="async">` : ""}
       ${cvOk(p.cv) ? `<video src="${cvUrl(p.cv)}" poster="${cvPoster(p.cv)}" controls playsinline preload="metadata" style="width:100%;max-height:70vh;border-radius:12px;margin-top:8px;background:#000"></video>` : /^[A-Za-z0-9_-]{11}$/.test(p.vid || "") ? `<iframe src="https://www.youtube-nocookie.com/embed/${p.vid}?rel=0&playsinline=1" title="Video" loading="lazy" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;margin-top:8px"></iframe>` : (img ? "" : `<div class="meta" style="margin-top:6px"><span>Text-only post (does not earn)</span></div>`)}
       <div class="act">
-        ${(cvOk(p.cv) || /^[A-Za-z0-9_-]{11}$/.test(p.vid || "")) ? `<button data-reel="${p.id}">&#9654; Full screen</button>` : ""}
+        ${(cvOk(p.cv) || /^[A-Za-z0-9_-]{11}$/.test(p.vid || "")) ? `<button data-reel="${p.id}">${IC.expand} Full screen</button>` : ""}
         ${mine || (me && me.uid === ADMIN_UID) ? `<button class="del" data-del="${p.id}">Delete</button>` : ""}
         ${me && !mine && !did ? `<button data-rep="${p.id}">Report</button>` : ""}
         ${did ? `<span class="meta">Reported</span>` : ""}
@@ -956,7 +982,7 @@ $("watchBack").onclick = () => show("home");
 $("watchBtn").onclick = () => show("watch");
 $("watchList").onclick = e => {
   const mb = e.target.closest("[data-wmute]");
-  if (mb) { const v = mb.closest(".reel").querySelector("video"); if (v) { v.muted = !v.muted; wSound = !v.muted; try { localStorage.setItem("wsound", wSound ? "1" : "0"); } catch (x) {} mb.innerHTML = v.muted ? "&#128263;" : "&#128266;"; } return; }
+  if (mb) { const v = mb.closest(".reel").querySelector("video"); if (v) { v.muted = !v.muted; wSound = !v.muted; try { localStorage.setItem("wsound", wSound ? "1" : "0"); } catch (x) {} mb.innerHTML = v.muted ? IC.volOff : IC.volOn; } return; }
   const b = e.target.closest("[data-wnext],[data-wprev]");
   if (!b) return;
   const L = $("watchList");
@@ -1111,12 +1137,12 @@ function buildWatch(vids) {
     const mine = me && me.uid === p.uid, did = me && (p.reporters || []).includes(me.uid);
     return `<article class="reel" data-pid="${p.id}" data-cuid="${esc(p.uid)}"><div class="wv" ${cvOk(p.cv) ? `data-cv="${p.cv}"` : `data-vid="${p.vid}"`} style="background:#000 url(${cvOk(p.cv) ? cvPoster(p.cv) : "https://i.ytimg.com/vi/" + p.vid + "/hqdefault.jpg"}) center/cover no-repeat"></div><div class="edge l"></div><div class="edge r"></div><div class="edge t"></div>
         <div class="rbtns">
-          <button class="sb" data-act="like" aria-label="Like"><i>&#9829;</i><small class="lcnt">${p.lc || 0}</small></button>
-          <button class="sb" data-act="comment" aria-label="Comment"><i>&#128172;</i></button>
-          <button class="sb" data-act="repost" aria-label="Repost"><i>&#128257;</i></button>
-          <button class="sb" data-act="share" aria-label="Share"><i>&#10148;</i></button>
-          <button class="sb" data-act="save" aria-label="Save"><i>&#128278;</i></button>
-          ${cvOk(p.cv) ? `<button data-wmute aria-label="Sound">&#128263;</button>` : ""}<button data-wprev aria-label="Previous video">&#9650;</button><button data-wnext aria-label="Next video">&#9660;</button></div>
+          <button class="sb" data-act="like" aria-label="Like"><i>${IC.heart}</i><small class="lcnt">${p.lc || 0}</small></button>
+          <button class="sb" data-act="comment" aria-label="Comment"><i>${IC.comment}</i></button>
+          <button class="sb" data-act="repost" aria-label="Repost"><i>${IC.repost}</i></button>
+          <button class="sb" data-act="share" aria-label="Share"><i>${IC.share}</i></button>
+          <button class="sb" data-act="save" aria-label="Save"><i>${IC.save}</i></button>
+          ${cvOk(p.cv) ? `<button data-wmute aria-label="Sound">${IC.volOff}</button>` : ""}<button data-wprev aria-label="Previous video">${IC.up}</button><button data-wnext aria-label="Next video">${IC.down}</button></div>
         <div class="rinfo"><div class="head"><div class="av">${avInner(p.name, p.photo)}</div><b>${esc(p.name)}</b><button class="fbtn" data-act="follow">Follow</button></div>
           ${p.text ? `<p>${esc(p.text)}</p>` : ""}
           <div class="act">
@@ -1149,7 +1175,7 @@ $("watchList").addEventListener("click", e => {
   if (now - lastTap < 300) {
     clearTimeout(tapTimer); lastTap = 0;
     const rect = reel.getBoundingClientRect(), hp = document.createElement("div");
-    hp.className = "heartpop"; hp.textContent = "\u2665";
+    hp.className = "heartpop"; hp.innerHTML = IC.heartBig;
     hp.style.left = (e.clientX - rect.left) + "px"; hp.style.top = (e.clientY - rect.top) + "px";
     reel.appendChild(hp); setTimeout(() => hp.remove(), 900);
     toggleLike(reel.dataset.pid, true);
