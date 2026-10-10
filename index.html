@@ -333,6 +333,8 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
         </div>
       </div>
       <div class="pdash"><b>Your dashboard</b><span id="pDash">0 views this month</span></div>
+      <div class="pdash" style="display:flex;align-items:center;justify-content:space-between;gap:10px"><div><b><i class="livedot"></i>Total earning <small>(est.)</small></b><span class="green" id="pEarn">Rs 0.00</span></div><button class="pri" id="wdBtn" style="min-height:40px;padding:0 18px">Withdraw</button></div>
+      <p class="small" id="wdMsg" role="status" style="margin:6px 2px 0"></p>
       <div class="row pbtns"><button class="ghost" id="pShare">Share profile</button><button class="ghost" id="pSet">Settings</button></div>
       <div class="ptabs"><button class="on" aria-label="My videos"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="14" rx="1.5"/><rect width="7" height="7" x="3" y="14" rx="1.5"/></svg></button><button id="pTabSaved" aria-label="Saved"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg></button><button id="pTabRep" aria-label="Reposts"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></button></div>
       <div class="vgrid" id="myGrid"></div>
@@ -364,10 +366,13 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
       <button class="setrow" id="rowInvite"><i><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></i><span>Invite friends</span><em>&rsaquo;</em></button>
     </div>
     <section class="card" id="admin" hidden>
+      <b>Admin</b>
+      <div style="display:none" aria-hidden="true">
       <b>Admin: monthly earnings</b>
       <div class="row"><input type="text" id="ym" placeholder="Month (e.g. 202610)" style="max-width:150px"><input type="number" id="earn" placeholder="Total ad revenue (Rs)" style="max-width:190px"><input type="number" id="sharep" placeholder="Creators share (%)" style="max-width:170px"></div>
       <div class="row"><button class="pri" id="calc">Calculate</button><button class="ghost" id="pub" disabled>Publish</button></div>
       <div id="adminOut" class="small"></div>
+      </div>
       <div class="row"><button class="ghost" id="loadReq">View payment requests</button></div>
       <div id="reqList" class="small"></div>
       <div class="row"><button class="ghost" id="loadRep">Reported posts</button></div>
@@ -592,7 +597,7 @@ onAuthStateChanged(auth, async u => {
   setNavAvatar(u);
   $("gear").hidden = !u;
   authReady = true; window.__ppAuth = true; fillAds();
-  if (!u) { stopLive(); $("dEarn").textContent = "Rs 0.00"; myLikes.clear(); mySaves.clear(); myReposts.clear(); myFollows.clear(); refreshSocialUI(); }
+  if (!u) { stopLive(); $("dEarn").textContent = $("pEarn").textContent = "Rs 0.00"; myLikes.clear(); mySaves.clear(); myReposts.clear(); myFollows.clear(); refreshSocialUI(); }
   $("quick").hidden = !u; $("qav").innerHTML = avInner(u ? (u.displayName || "U") : "U", u ? u.photoURL : ""); $("pname").textContent = u ? (u.displayName || "User") : "User";
   $("login").hidden = !!u;
   if (!u && curView === "settings") show("home");
@@ -1000,13 +1005,41 @@ async function loadDash() {
   const k = lbRows.findIndex(r => r.uid === me.uid);
   $("sRank").textContent = k >= 0 ? "#" + (k + 1) : "-";
 }
-let unsubLive = null;
+let unsubLive = null, liveTotalViews = 0, liveTotalEarn = 0;
+// Withdraw email: web3forms.com par apni Gmail se free access key lo aur yahan paste karo
+const WEB3FORMS_KEY = "PASTE_ACCESS_KEY_HERE";
+$("wdBtn").onclick = async () => {
+  const m = $("wdMsg"); m.textContent = "";
+  if (needLogin()) return;
+  if (!agreed) { openPolicy(true); return; }
+  if (!myUpi) { m.textContent = "Add your UPI ID in Settings first."; return; }
+  if (liveTotalEarn < MIN_PAY) { m.textContent = "Minimum withdrawal is Rs " + MIN_PAY + ". Your total is Rs " + liveTotalEarn.toFixed(2) + "."; return; }
+  if (WEB3FORMS_KEY.indexOf("PASTE") === 0) { m.textContent = "Withdrawal is not set up yet."; return; }
+  const ck = "wd_" + me.uid + "_" + istKey();
+  try { if (localStorage.getItem(ck)) { m.textContent = "You already sent a withdrawal request today."; return; } } catch (e) {}
+  $("wdBtn").disabled = true; m.textContent = "Sending...";
+  try {
+    const r = await fetch("https://api.web3forms.com/submit", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({
+      access_key: WEB3FORMS_KEY,
+      subject: "PostPay withdrawal request: Rs " + liveTotalEarn.toFixed(2),
+      from_name: "PostPay",
+      message: "Withdrawal request\n\nName: " + (me.displayName || "User") + "\nEmail: " + (me.email || "-") + "\nUser ID: " + me.uid + "\n\nTotal views: " + liveTotalViews + "\nTotal earning (est.): Rs " + liveTotalEarn.toFixed(2) + "\nUPI ID: " + myUpi + "\n\nTime: " + new Date().toLocaleString("en-IN")
+    }) });
+    const j = await r.json();
+    if (!j.success) throw new Error("fail");
+    try { localStorage.setItem(ck, "1"); } catch (e) {}
+    m.textContent = "Withdrawal request sent. Payment will follow soon.";
+  } catch (e) { m.textContent = "Could not send the request. Please try again."; }
+  $("wdBtn").disabled = false;
+};
 function startLive() {
   if (unsubLive) unsubLive();
   unsubLive = onSnapshot(query(collection(db, "posts"), where("uid", "==", me.uid)), s => {
     const { ym } = utc();
-    let views = 0, n = 0;
-    s.forEach(d => { const x = d.data(); n++; if (x.vid || x.cv || x.img) views += x["v" + ym] || 0; });
+    let views = 0, n = 0, all = 0;
+    s.forEach(d => { const x = d.data(); n++; if (x.vid || x.cv || x.img) { views += x["v" + ym] || 0; Object.keys(x).forEach(k => { if (/^v\d{6}$/.test(k)) all += Number(x[k]) || 0; }); } });
+    liveTotalViews = all; liveTotalEarn = all >= MIN_LIVE_VIEWS ? all * RATE_PER_VIEW : 0;
+    $("pEarn").textContent = "Rs " + liveTotalEarn.toFixed(2);
     $("dViews").textContent = $("sViews").textContent = views;
     $("sPosts").textContent = n;
     $("dEarn").textContent = "Rs " + (views >= MIN_LIVE_VIEWS ? views * RATE_PER_VIEW : 0).toFixed(2);
