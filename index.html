@@ -165,6 +165,19 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 .pbar button svg{width:20px;height:20px}
 .pbar button.on{color:#ff2d55;border-color:#ff2d55}
 .pbar button.on i{animation:pop .3s}
+.nphead{text-align:center;font-size:17px;margin-bottom:12px}
+.nptabs{display:flex;gap:8px;margin-bottom:12px}
+.nptabs button{flex:1;min-height:40px;border-radius:999px;background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none;font-weight:700}
+.nptabs button.on{background:#2563eb;border-color:#2563eb;color:#fff}
+.npbox{position:relative;width:100%;aspect-ratio:4/5;max-height:44vh;border:2px dashed var(--line);border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,.03)}
+.npbox.reel{aspect-ratio:9/14}
+.npempty{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:16px}
+.npplus{width:56px;height:56px;border-radius:50%;background:#2563eb;color:#fff;font-size:34px;line-height:56px;font-weight:300}
+#nppre{position:absolute;inset:0}
+#nppre img,#nppre video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
+.npbox.has{border-style:solid}
+.npbox.has .npempty{display:none}
+#npchange{margin-top:10px;width:100%}
 @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
 .fbtn{pointer-events:auto;margin-left:10px;padding:4px 14px;min-height:30px;font-size:13px;border-radius:999px;background:transparent;color:#fff;border:1px solid #fff;box-shadow:none}
 .fbtn.on{background:rgba(255,255,255,.22)}
@@ -274,12 +287,19 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
       <button class="pri signin">Sign in with Google</button>
     </section>
     <section class="card" id="newpost" hidden>
-      <textarea id="txt" maxlength="500" placeholder="Write something (max 500 characters)"></textarea>
-      <input type="text" id="yt" placeholder="YouTube video link (video posts earn)" style="margin-top:10px">
-      <label class="small" for="vfile" style="display:block;margin-top:14px">Or upload a video from your phone (max 60 sec, 25 MB)</label>
-      <input type="file" id="vfile" accept="video/mp4,video/webm,video/quicktime">
+      <div class="nphead"><b>New post</b></div>
+      <div class="nptabs" id="nptabs"><button type="button" data-m="photo" class="on">Photo</button><button type="button" data-m="reel">Reel</button></div>
+      <div class="npbox" id="npbox" role="button" tabindex="0">
+        <div class="npempty" id="npempty"><div class="npplus">+</div><b id="npcta">Choose a photo</b><span class="small" id="nphint">Tap to pick from your gallery</span></div>
+        <div id="nppre"></div>
+      </div>
+      <input type="file" id="pic" accept="image/*" hidden>
+      <input type="file" id="vfile" accept="video/mp4,video/webm,video/quicktime" hidden>
+      <button type="button" class="ghost" id="npchange" hidden>Change</button>
+      <textarea id="txt" maxlength="500" placeholder="Write a caption..." style="margin-top:12px"></textarea>
+      <div id="ytwrap" hidden><input type="text" id="yt" placeholder="Or paste a YouTube video link" style="margin-top:10px"></div>
       <div id="vprog" class="small"></div>
-      <div class="row"><input type="file" id="pic" accept="image/*"><button class="pri" id="send">Post</button></div>
+      <button class="pri big" id="send" style="width:100%;margin-top:12px">Share</button>
       <div id="msg" role="status"></div>
     </section>
   </div>
@@ -721,6 +741,29 @@ function uploadVideo(file, onProg) {
     x.send(fd);
   });
 }
+let npMode = "photo", npUrl = "";
+function npRefresh() {
+  const f = npMode === "photo" ? $("pic").files[0] : $("vfile").files[0], box = $("npbox"), pre = $("nppre");
+  if (npUrl) { URL.revokeObjectURL(npUrl); npUrl = ""; }
+  pre.innerHTML = "";
+  if (f) {
+    npUrl = URL.createObjectURL(f);
+    pre.innerHTML = npMode === "photo" ? `<img src="${npUrl}" alt="Preview">` : `<video src="${npUrl}" muted playsinline controls preload="metadata"></video>`;
+  }
+  box.classList.toggle("has", !!f); box.classList.toggle("reel", npMode === "reel");
+  $("npchange").hidden = !f;
+  $("npcta").textContent = npMode === "photo" ? "Choose a photo" : "Choose a video";
+  $("nphint").textContent = npMode === "photo" ? "Tap to pick from your gallery" : "Tap to pick a video (max 60 sec, 25 MB)";
+  $("ytwrap").hidden = npMode !== "reel";
+  document.querySelectorAll("#nptabs button").forEach(b => b.classList.toggle("on", b.dataset.m === npMode));
+}
+function npSet(m) { npMode = m; $("pic").value = ""; $("vfile").value = ""; $("yt").value = ""; npRefresh(); }
+$("nptabs").onclick = e => { const b = e.target.closest("button"); if (b) npSet(b.dataset.m); };
+const npPick = () => (npMode === "photo" ? $("pic") : $("vfile")).click();
+$("npbox").onclick = npPick; $("npchange").onclick = npPick;
+$("npbox").onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); npPick(); } };
+$("pic").onchange = npRefresh; $("vfile").onchange = npRefresh;
+npRefresh();
 $("send").onclick = async () => {
   const text = $("txt").value.trim(), f = $("pic").files[0], m = $("msg"), link = $("yt").value.trim(), vid = link ? ytId(link) : "", vf = $("vfile").files[0];
   m.textContent = "";
@@ -757,7 +800,7 @@ $("send").onclick = async () => {
     if (cv) bt.set(doc(db, "vlimit", me.uid + "_" + istKey()), { t: serverTimestamp() });
     bt.set(ref, { uid: me.uid, name: (me.displayName || "User").slice(0, 60), photo: okPhoto(me.photoURL) ? me.photoURL : "", text, img, vid, cv, createdAt: serverTimestamp(), reporters: [] });
     await bt.commit();
-    $("txt").value = ""; $("pic").value = ""; $("yt").value = ""; $("vfile").value = ""; $("vprog").textContent = ""; toast("Posted"); show("home");
+    $("txt").value = ""; $("pic").value = ""; $("yt").value = ""; $("vfile").value = ""; $("vprog").textContent = ""; npRefresh(); toast("Posted"); show("home");
   } catch (e) { console.error(e); $("vprog").textContent = ""; m.textContent = e && e.stage === "upload" ? "Video upload failed: " + String(e.message).slice(0, 120) : "Could not post" + (e && e.code ? " (" + e.code + ")" : "") + ". Please wait a minute between posts and try again."; }
   $("send").disabled = false;
 };
