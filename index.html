@@ -1053,7 +1053,7 @@ async function loadDash() {
   const k = lbRows.findIndex(r => r.uid === me.uid);
   $("sRank").textContent = k >= 0 ? "#" + (k + 1) : "-";
 }
-let unsubLive = null, liveTotalViews = 0, liveTotalEarn = 0;
+let unsubLive = null, liveTotalViews = 0, liveTotalEarn = 0, liveMonthViews = 0;
 // Withdraw email: web3forms.com par apni Gmail se free access key lo aur yahan paste karo
 const WEB3FORMS_KEY = "PASTE_ACCESS_KEY_HERE";
 $("wdBtn").onclick = async () => {
@@ -1071,7 +1071,7 @@ $("wdBtn").onclick = async () => {
       access_key: WEB3FORMS_KEY,
       subject: "PostPay withdrawal request: Rs " + liveTotalEarn.toFixed(2),
       from_name: "PostPay",
-      message: "Withdrawal request\n\nName: " + (me.displayName || "User") + "\nEmail: " + (me.email || "-") + "\nUser ID: " + me.uid + "\n\nTotal views: " + liveTotalViews + "\nTotal earning (est.): Rs " + liveTotalEarn.toFixed(2) + "\nUPI ID: " + myUpi + "\n\nTime: " + new Date().toLocaleString("en-IN")
+      message: "Withdrawal request\n\nName: " + (me.displayName || "User") + "\nEmail: " + (me.email || "-") + "\nUser ID: " + me.uid + "\n\nViews this month: " + liveMonthViews + "\nTotal views (all time): " + liveTotalViews + "\nTotal earning (est.): Rs " + liveTotalEarn.toFixed(2) + "\nUPI ID: " + myUpi + "\n\nTime: " + new Date().toLocaleString("en-IN")
     }) });
     const j = await r.json();
     if (!j.success) throw new Error("fail");
@@ -1086,7 +1086,7 @@ function startLive() {
     const { ym } = utc();
     let views = 0, n = 0, all = 0;
     s.forEach(d => { const x = d.data(); n++; if (x.vid || x.cv || x.img) { views += x["v" + ym] || 0; Object.keys(x).forEach(k => { if (/^v\d{6}$/.test(k)) all += Number(x[k]) || 0; }); } });
-    liveTotalViews = all; liveTotalEarn = all >= MIN_LIVE_VIEWS ? all * RATE_PER_VIEW : 0;
+    liveMonthViews = views; liveTotalViews = all; liveTotalEarn = all >= MIN_LIVE_VIEWS ? all * RATE_PER_VIEW : 0;
     $("pEarn").textContent = "Rs " + liveTotalEarn.toFixed(2);
     $("dViews").textContent = $("sViews").textContent = views;
     $("sPosts").textContent = n;
