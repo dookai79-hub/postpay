@@ -9,6 +9,8 @@
 <meta property="og:description" content="Share photos and videos and earn from your views.">
 <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="msapplication-TileImage" content="favicon.png">
 <meta property="og:image" content="https://dookai79-hub.github.io/postpay/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -31,7 +33,7 @@
 <meta property="og:url" content="https://dookai79-hub.github.io/postpay/">
 <meta name="twitter:card" content="summary">
 <meta name="robots" content="index, follow">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"PostPay","url":"https://dookai79-hub.github.io/postpay/","description":"Post photos and videos, get views and earn."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"PostPay","url":"https://dookai79-hub.github.io/postpay/","description":"Post photos and videos, get views and earn.","image":"https://dookai79-hub.github.io/postpay/og.png","thumbnailUrl":"https://dookai79-hub.github.io/postpay/favicon.png"}</script>
 <style>
 :root{--bg:#0f131c;--card:#1c2028;--card2:#262a33;--ink:#dfe2ee;--mute:#9aa1b4;--line:#2b303b;--acc:#4d8eff;--acc2:#6ffbbe;--bad:#ff5167;--onacc:#ffffff;--shadow:0 4px 18px rgba(0,0,0,.4);--g:linear-gradient(135deg,#2563eb,#4d8eff);color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -279,6 +281,42 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 </style>
 </head>
 <body>
+<style>
+#slowLoad{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:#0f131c;opacity:0;transition:opacity .35s ease}
+#slowLoad.on{display:flex}#slowLoad.show{opacity:1}
+#slowLoad .lg{position:relative;width:96px;height:96px}
+#slowLoad .lg img{width:96px;height:96px;display:block;border-radius:26px;animation:slPulse 1.6s ease-in-out infinite}
+#slowLoad .lg i{position:absolute;inset:-12px;border-radius:34px;border:3px solid transparent;border-top-color:#FF0033;border-right-color:rgba(255,0,51,.35);animation:slSpin 1.1s linear infinite}
+#slowLoad .nm{font-size:26px;font-weight:800;letter-spacing:-.5px;color:#dfe2ee}#slowLoad .nm b{color:#FF0033}
+#slowLoad .hint{font-size:13px;color:#9aa1b4;margin-top:-10px}
+@keyframes slPulse{0%,100%{transform:scale(1)}50%{transform:scale(.92)}}
+@keyframes slSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){#slowLoad .lg img,#slowLoad .lg i{animation:none}}
+</style>
+<div id="slowLoad" aria-live="polite" role="status"><div class="lg"><i></i><img src="favicon.png" alt="PostPay" width="96" height="96"></div><div class="nm">Post<b>Pay</b></div><div class="hint">Slow connection... loading</div></div>
+<script>
+(function () {
+  var el = document.getElementById("slowLoad"), shown = 0, t0 = Date.now();
+  function ready() {
+    var f = document.getElementById("feed");
+    return !!window.__ppAuth && !(f && /Loading posts/.test(f.textContent || ""));
+  }
+  function hide() {
+    clearInterval(iv); clearTimeout(st);
+    if (!shown) return;
+    var wait = Math.max(0, 700 - (Date.now() - shown));
+    setTimeout(function () { el.classList.remove("show"); setTimeout(function () { el.classList.remove("on"); }, 360); }, wait);
+  }
+  var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  var slow = !!(c && (c.saveData || /(^|-)2g$|^3g$/.test(c.effectiveType || "") || (c.downlink && c.downlink < 1.5) || (c.rtt && c.rtt > 700)));
+  var st = setTimeout(function () {
+    if (ready()) return;
+    shown = Date.now(); el.classList.add("on");
+    requestAnimationFrame(function () { requestAnimationFrame(function () { el.classList.add("show"); }); });
+  }, slow ? 500 : 3000);
+  var iv = setInterval(function () { if (ready() || Date.now() - t0 > 15000) hide(); }, 200);
+})();
+</script>
 <noscript><p style="padding:20px;color:#fff">PostPay needs JavaScript. Please enable it in your browser.</p></noscript>
 <header><h1><img class="logo" src="favicon.png" alt="" width="34" height="34" style="background:none;border-radius:0"><span>Post<span class="grad">Pay</span></span></h1><span class="ptitle" id="ptitle">Home</span><button class="gear" id="gear" aria-label="Settings" title="Settings" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></header>
 <main>
@@ -319,6 +357,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 
   <div class="view" id="v-add" hidden>
     <section class="card" id="needAdd" hidden>
+      <img src="favicon.png" alt="PostPay" width="48" height="48" style="display:block;margin:0 0 10px;border-radius:13px">
       <b>Sign in to post</b>
       <p class="small">Sign in with Google to share photos, videos or text.</p>
       <button class="pri signin">Sign in with Google</button>
@@ -351,6 +390,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--ink)}
 
   <div class="view" id="v-me" hidden>
     <section class="card" id="needMe" hidden>
+      <img src="favicon.png" alt="PostPay" width="48" height="48" style="display:block;margin:0 0 10px;border-radius:13px">
       <b>Sign in to see your profile</b>
       <p class="small">Your earnings, UPI ID and payment requests live here.</p>
       <button class="pri signin">Sign in with Google</button>
