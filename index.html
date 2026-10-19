@@ -901,6 +901,17 @@ function uploadVideo(file, onProg) {
     x.send(fd);
   });
 }
+// Firestore rules ke istDay() se match karta hai: IST (UTC+5:30) ke hisaab se din
+function istDayStr() {
+  const t = new Date(Date.now() + 330 * 60000);
+  return String(t.getUTCFullYear() * 10000 + (t.getUTCMonth() + 1) * 100 + t.getUTCDate());
+}
+const DAILY_VIDEO_LIMIT = 5;
+async function getVideoLimitState() {
+  const ref = doc(db, "vlimit", me.uid + "_" + istDayStr());
+  const s = await getDoc(ref);
+  return { ref, n: s.exists() ? (s.data().n || 0) : 0 };
+}
 let npMode = "photo", npUrl = "";
 function npRefresh() {
   const f = npMode === "photo" ? $("pic").files[0] : $("vfile").files[0], box = $("npbox"), pre = $("nppre");
@@ -937,8 +948,15 @@ $("send").onclick = async () => {
   if (BAD.test(text)) { m.textContent = "Your post has words that are not allowed on PostPay."; return; }
   if (/(https?:|www\.|bit\.ly|t\.me\/|wa\.me\/)/i.test(text)) { m.textContent = "Links are not allowed in text. Add videos only through the YouTube link box."; return; }
   $("send").disabled = true;
+  let vlim = null;
   try {
-    if (vid) { m.textContent = "Checking video..."; const c = await ytCheck(vid); if (!c.ok) { m.textContent = c.why; $("send").disabled = false; return; } }
+    if (vid) {
+      m.textContent = "Checking video...";
+      const [lim, c] = await Promise.all([getVideoLimitState(), ytCheck(vid)]);
+      vlim = lim;
+      if (vlim.n >= DAILY_VIDEO_LIMIT) { m.textContent = "Daily video limit reached (" + DAILY_VIDEO_LIMIT + "/day). Try again tomorrow."; $("send").disabled = false; return; }
+      if (!c.ok) { m.textContent = c.why; $("send").disabled = false; return; }
+    }
     let img = "", cv = "";
     if (f) {
       m.textContent = "Checking photo...";
@@ -948,7 +966,9 @@ $("send").onclick = async () => {
     }
     if (vf) {
       m.textContent = "Checking video...";
-      const c = await checkVideo(vf);
+      const [lim, c] = await Promise.all([getVideoLimitState(), checkVideo(vf)]);
+      vlim = lim;
+      if (vlim.n >= DAILY_VIDEO_LIMIT) { m.textContent = "Daily video limit reached (" + DAILY_VIDEO_LIMIT + "/day). Try again tomorrow."; $("send").disabled = false; return; }
       if (!c.ok) { m.textContent = c.why; $("send").disabled = false; return; }
       m.textContent = "Uploading video...";
       cv = await uploadVideo(vf, p => { $("vprog").textContent = "Uploading " + p + "%"; });
@@ -957,6 +977,7 @@ $("send").onclick = async () => {
     const bt = writeBatch(db), ref = doc(collection(db, "posts"));
     bt.set(doc(db, "rate", me.uid), { t: serverTimestamp() });
     bt.set(ref, { uid: me.uid, name: (me.displayName || "User").slice(0, 60), photo: okPhoto(me.photoURL) ? me.photoURL : "", text, img, vid, cv, createdAt: serverTimestamp(), reporters: [] });
+    if (vid || vf) { bt.set(vlim.ref, { t: serverTimestamp(), n: vlim.n + 1 }); }
     await bt.commit();
     $("txt").value = ""; $("pic").value = ""; $("yt").value = ""; $("vfile").value = ""; $("vprog").textContent = ""; npRefresh(); toast("Posted"); show("home");
   } catch (e) { console.error(e); $("vprog").textContent = ""; m.textContent = e && e.stage === "upload" ? "Video upload failed: " + String(e.message).slice(0, 120) : "Could not post" + (e && e.code ? " (" + e.code + ")" : "") + ". Please wait a minute between posts and try again."; }
