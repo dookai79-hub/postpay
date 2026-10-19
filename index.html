@@ -22,6 +22,7 @@
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js" crossorigin>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" crossorigin>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://res.cloudinary.com">
 <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
 <link rel="dns-prefetch" href="https://i.ytimg.com">
 <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'none'">
@@ -532,7 +533,7 @@ header{gap:6px}
   <button id="n-search" data-l="Search" aria-label="Search" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
   <button id="n-me" data-l="Profile" aria-label="Profile" title="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></button>
 </nav>
-<footer>PostPay &copy; 2026 &middot; <a href="#" id="polLink" style="color:inherit">Rules &amp; Privacy Policy</a> &middot; b18</footer>
+<footer>PostPay &copy; 2026 &middot; <a href="#" id="polLink" style="color:inherit">Rules &amp; Privacy Policy</a> &middot; b20</footer>
 
 <div id="pv" hidden><button id="pvx" aria-label="Close">&times;</button><div id="pvbox"><img id="pvimg" alt="Photo"></div><div id="pvtip">Pinch to zoom &middot; double tap to zoom in</div></div>
 <div id="ntf" class="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-label="Notifications"><div class="row" style="justify-content:space-between;margin:0 0 6px"><h3 style="margin:0">Notifications</h3><button class="ghost" id="ntfx">Close</button></div><div id="ntfList" style="overflow:auto"></div></div></div>
@@ -549,7 +550,6 @@ header{gap:6px}
         <li>Accounts that break these rules are permanently banned and unpaid earnings can be withheld.</li>
         <li>Only post photos and videos that are yours or that you have permission to use. You are responsible for everything you post.</li>
         <li>Tap "Report" on any post that breaks the rules. A post with 3 reports is hidden automatically. The admin can remove posts that break the rules.</li>
-        <li>Each user can upload 1 video per day (YouTube links are not limited).</li>
       </ul>
       <h4>Earnings</h4>
       <ul>
@@ -946,7 +946,6 @@ $("send").onclick = async () => {
       if (!s.ok) { m.textContent = s.why; $("send").disabled = false; return; }
     }
     if (vf) {
-      if ((await getDoc(doc(db, "vlimit", me.uid + "_" + istKey()))).exists()) { m.textContent = "You can upload only 1 video per day. Please try again tomorrow."; $("send").disabled = false; return; }
       m.textContent = "Checking video...";
       const c = await checkVideo(vf);
       if (!c.ok) { m.textContent = c.why; $("send").disabled = false; return; }
@@ -956,7 +955,6 @@ $("send").onclick = async () => {
     m.textContent = "";
     const bt = writeBatch(db), ref = doc(collection(db, "posts"));
     bt.set(doc(db, "rate", me.uid), { t: serverTimestamp() });
-    if (cv) bt.set(doc(db, "vlimit", me.uid + "_" + istKey()), { t: serverTimestamp() });
     bt.set(ref, { uid: me.uid, name: (me.displayName || "User").slice(0, 60), photo: okPhoto(me.photoURL) ? me.photoURL : "", text, img, vid, cv, createdAt: serverTimestamp(), reporters: [] });
     await bt.commit();
     $("txt").value = ""; $("pic").value = ""; $("yt").value = ""; $("vfile").value = ""; $("vprog").textContent = ""; npRefresh(); toast("Posted"); show("home");
@@ -964,18 +962,19 @@ $("send").onclick = async () => {
   $("send").disabled = false;
 };
 
-let postLimit = 8, unsubPosts = null;
+let postLimit = 5, unsubPosts = null;
 function subscribePosts() {
   if (unsubPosts) unsubPosts();
   unsubPosts = onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(postLimit)), s => {
     posts = s.docs.map(d => ({ id: d.id, ...d.data() }));
     updateCounts();
+    if (!trendRows) setTop(posts.filter(p => !isBlocked(p.uid)));
     $("moreBtn").hidden = posts.length < postLimit;
     render();
   }, () => { $("feed").innerHTML = '<p class="small">Could not load posts. Please check the Firebase config.</p>'; });
 }
 subscribePosts();
-$("moreBtn").onclick = () => { postLimit += 8; subscribePosts(); };
+$("moreBtn").onclick = () => { postLimit += 5; subscribePosts(); };
 
 // View ginti: doosre ke post par, din me 1 baar, tab jab post screen par dikhe
 let watchKey = null;
@@ -1086,7 +1085,7 @@ function render() {
     const list = chip === "people" ? [] : vis.filter(p => typeOk(p) && (!hasTerm || termOk(p)));
     out = people.map(u => `<button class="person" data-uid="${esc(u.uid)}"><span class="av">${avInner(u.name, u.photo)}</span><span class="t"><b>${esc(u.name)}</b><span class="meta2">${u.n} post${u.n > 1 ? "s" : ""}</span></span></button>`).join("") + list.map((p, i) => card(p, i, false)).join("");
     if (!out) out = emptyHtml('No results found', 'Try a different word or check the spelling.');
-  } else { out = '<h3 class="sec" style="margin-top:6px">Trending</h3>' + trendingHtml(); loadTrending(); }
+  } else { out = '<h3 class="sec" style="margin-top:6px">Trending</h3>' + trendingHtml(); if (curView === "search") loadTrending(); }
   $("results").innerHTML = out;
   document.querySelectorAll("[data-uid]").forEach(b => b.onclick = () => { sel = b.dataset.uid; render(); window.scrollTo(0, 0); });
   if ($("selBack")) $("selBack").onclick = () => { sel = null; render(); };
@@ -1215,7 +1214,7 @@ function startLive() {
   }, () => {});
 }
 function stopLive() { if (unsubLive) { unsubLive(); unsubLive = null; } }
-loadLb().finally(loadTrending);
+loadLb();
 $("mintBtn").onclick = () => show("add");
 document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => {
   const c = b.dataset.go;
@@ -1503,21 +1502,23 @@ $("ntf").addEventListener("click", e => { if (e.target === $("ntf")) $("ntf").hi
 var trendRows = null, trendAt = 0, trendBusy = false;
 const vidOk = p => cvOk(p.cv) || /^[A-Za-z0-9_-]{11}$/.test(p.vid || "");
 const jpgOk = p => typeof p.img === "string" && p.img.startsWith("data:image/jpeg;base64,");
+function setTop(rows) {
+  const m = {};
+  rows.forEach(p => { if (!(p.lc > 0)) return; const o = m[p.uid] = m[p.uid] || { uid: p.uid, name: p.name, likes: 0 }; o.likes += p.lc || 0; });
+  const top = Object.values(m).sort((a, b) => b.likes - a.likes).slice(0, 5);
+  if (!top.length) return;
+  lbRows = top.map(r => ({ uid: r.uid, name: r.name, views: r.likes }));
+  $("lb").innerHTML = top.map((r, i) => `<div class="r"><span><span class="rk">${i + 1}</span>${esc(r.name)}</span><span>${r.likes} like${r.likes > 1 ? "s" : ""}</span></div>`).join("");
+  if (me) { const k = lbRows.findIndex(r => r.uid === me.uid); $("sRank").textContent = k >= 0 ? "#" + (k + 1) : "-"; }
+}
 async function loadTrending() {
   if (trendBusy || Date.now() - trendAt < 120000) return;
   trendBusy = true;
   try {
-    const s = await getDocs(query(collection(db, "posts"), orderBy("lc", "desc"), limit(30)));
+    const s = await getDocs(query(collection(db, "posts"), orderBy("lc", "desc"), limit(12)));
     const rows = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(p => (p.lc || 0) > 0 && (p.reporters || []).length < 3 && (vidOk(p) || jpgOk(p)));
     trendRows = rows; trendAt = Date.now();
-    const m = {};
-    rows.forEach(p => { const o = m[p.uid] = m[p.uid] || { uid: p.uid, name: p.name, likes: 0 }; o.likes += p.lc || 0; });
-    const top = Object.values(m).sort((a, b) => b.likes - a.likes).slice(0, 5);
-    if (top.length) {
-      lbRows = top.map(r => ({ uid: r.uid, name: r.name, views: r.likes }));
-      $("lb").innerHTML = top.map((r, i) => `<div class="r"><span><span class="rk">${i + 1}</span>${esc(r.name)}</span><span>${r.likes} like${r.likes > 1 ? "s" : ""}</span></div>`).join("");
-      if (me) { const k = lbRows.findIndex(r => r.uid === me.uid); $("sRank").textContent = k >= 0 ? "#" + (k + 1) : "-"; }
-    }
+    setTop(rows);
     lastKey = ""; render();
   } catch (e) { trendAt = Date.now() - 60000; trendRows = trendRows || []; }
   trendBusy = false;
@@ -1577,7 +1578,7 @@ function buildWatch(vids) {
           <button class="sb" data-act="repost" aria-label="Repost"><i>${IC.repost}</i></button>
           <button class="sb" data-act="share" aria-label="Share"><i>${IC.share}</i></button>
           <button class="sb" data-act="save" aria-label="Save"><i>${IC.save}</i></button>
-          ${cvOk(p.cv) ? `<button data-wmute aria-label="Sound">${IC.volOff}</button>` : ""}<button data-wprev aria-label="Previous video">${IC.up}</button><button data-wnext aria-label="Next video">${IC.down}</button></div>
+          ${cvOk(p.cv) ? `<button data-wmute aria-label="Sound">${IC.volOff}</button>` : ""}</div>
         <div class="rinfo"><div class="head"><div class="av">${avInner(p.name, p.photo)}</div><b>${esc(p.name)}</b><button class="fbtn" data-act="follow">Follow</button></div>
           ${p.text ? `<p>${esc(p.text)}</p>` : ""}
           <div class="act">
