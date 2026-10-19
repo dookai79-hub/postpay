@@ -533,7 +533,7 @@ header{gap:6px}
   <button id="n-search" data-l="Search" aria-label="Search" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
   <button id="n-me" data-l="Profile" aria-label="Profile" title="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></button>
 </nav>
-<footer>PostPay &copy; 2026 &middot; <a href="#" id="polLink" style="color:inherit">Rules &amp; Privacy Policy</a> &middot; b20</footer>
+<footer>PostPay &copy; 2026 &middot; <a href="#" id="polLink" style="color:inherit">Rules &amp; Privacy Policy</a> &middot; b21</footer>
 
 <div id="pv" hidden><button id="pvx" aria-label="Close">&times;</button><div id="pvbox"><img id="pvimg" alt="Photo"></div><div id="pvtip">Pinch to zoom &middot; double tap to zoom in</div></div>
 <div id="ntf" class="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-label="Notifications"><div class="row" style="justify-content:space-between;margin:0 0 6px"><h3 style="margin:0">Notifications</h3><button class="ghost" id="ntfx">Close</button></div><div id="ntfList" style="overflow:auto"></div></div></div>
@@ -693,6 +693,7 @@ function show(t) {
   if (t === "me") { loadProfile(); renderWdh(); }
   if (t === "settings") renderBlocked();
   if (t === "search") loadTrending();
+  if (t === "watch") { try { if (postLimit < 30) { postLimit = 30; subscribePosts(); } } catch (e) {} }
 }
 let myVids = [];
 $("myGrid").onclick = e => {
